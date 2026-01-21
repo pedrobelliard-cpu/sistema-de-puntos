@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestión de Innovación (Diseño)</title>
+    <title>Sistema de Gestión de Innovación</title>
     <style>
-        /* --- ESTILOS DE DISEÑO (Aquí es donde "maquillamos" la web) --- */
+        /* --- ESTILOS VISUALES --- */
         :root {
-            --primary: #2563eb;       /* Azul principal */
-            --secondary: #1e293b;     /* Texto oscuro */
-            --accent: #10b981;        /* Verde éxito */
-            --bg: #f1f5f9;            /* Fondo gris claro */
-            --card: #ffffff;          /* Blanco tarjetas */
+            --primary: #2563eb;       
+            --secondary: #1e293b;     
+            --accent: #10b981;        
+            --bg: #f1f5f9;            
+            --card: #ffffff;          
+            --danger: #ef4444;        /* Rojo para borrar */
         }
 
         body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); color: var(--secondary); margin: 0; padding: 20px; }
@@ -22,22 +23,27 @@
         .header h1 { margin: 0; font-size: 24px; color: var(--secondary); }
         .header p { margin: 5px 0 0; color: #64748b; font-size: 14px; }
         
+        .actions { display: flex; gap: 10px; }
+
         .btn-main { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
         .btn-main:hover { background: #1d4ed8; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); }
 
-        /* TARJETAS KPI (Indicadores) */
+        .btn-print { background: var(--secondary); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .btn-print:hover { background: #334155; }
+
+        /* TARJETAS KPI */
         .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .card { background: var(--card); padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .kpi-title { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; font-weight: 700; }
         .kpi-number { font-size: 36px; font-weight: 800; margin-top: 10px; color: var(--secondary); }
         
-        /* GRÁFICAS MANUALES (CSS) */
+        /* GRÁFICAS */
         .charts-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 25px; margin-bottom: 30px; }
         .chart-box { background: var(--card); padding: 25px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .chart-header { font-weight: bold; margin-bottom: 20px; font-size: 18px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; }
         
         .bar-container { display: flex; align-items: center; margin-bottom: 15px; font-size: 14px; }
-        .bar-name { width: 100px; text-align: right; padding-right: 15px; font-weight: 500; color: #475569; }
+        .bar-name { width: 120px; text-align: right; padding-right: 15px; font-weight: 500; color: #475569; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .bar-bg { flex: 1; background: #f1f5f9; height: 28px; border-radius: 6px; overflow: hidden; position: relative; }
         .bar-fill { height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; color: white; font-weight: bold; font-size: 12px; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
 
@@ -49,8 +55,12 @@
         tr:last-child td { border-bottom: none; }
         tr:hover { background-color: #f8fafc; }
         .badge { background: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        
+        /* Botón Eliminar */
+        .btn-delete { background: transparent; border: 1px solid #fee2e2; color: var(--danger); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.2s; }
+        .btn-delete:hover { background: var(--danger); color: white; }
 
-        /* VENTANA MODAL (Formulario) */
+        /* MODAL */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 100; justify-content: center; align-items: center; }
         .modal-content { background: white; width: 90%; max-width: 450px; padding: 30px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); animation: slideIn 0.3s ease; }
         
@@ -64,7 +74,14 @@
         .btn-save { flex: 2; background: var(--secondary); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .btn-cancel { flex: 1; background: transparent; color: #64748b; border: 2px solid #e2e8f0; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .btn-save:hover { background: #0f172a; }
-        .btn-cancel:hover { background: #f1f5f9; color: #334155; }
+
+        /* ESTILOS DE IMPRESIÓN (Ocultar botones al imprimir) */
+        @media print {
+            .actions, .btn-delete, th:last-child, td:last-child { display: none !important; }
+            body { background: white; padding: 0; }
+            .container { max-width: 100%; }
+            .card, .chart-box, .table-box { box-shadow: none; border: 1px solid #ccc; }
+        }
 
     </style>
 </head>
@@ -75,11 +92,16 @@
         <div class="header">
             <div>
                 <h1>Gestión de Innovación</h1>
-                <p>Panel de Control v1.0 (Modo Diseño)</p>
+                <p>Panel de Control Oficial</p>
             </div>
-            <button class="btn-main" onclick="abrirModal()">
-                <span>+</span> Nuevo Gestor
-            </button>
+            <div class="actions">
+                <button class="btn-print" onclick="window.print()">
+                    🖨️ Imprimir
+                </button>
+                <button class="btn-main" onclick="abrirModal()">
+                    <span>+</span> Nuevo Gestor
+                </button>
+            </div>
         </div>
 
         <div class="kpi-grid">
@@ -112,7 +134,7 @@
 
         <div class="table-box">
             <div class="chart-header" style="margin: 0; padding: 20px 25px; border-bottom: 1px solid #e2e8f0;">
-                Listado Detallado
+                Listado Detallado de Gestores
             </div>
             <table>
                 <thead>
@@ -122,6 +144,7 @@
                         <th>Puntos (PI)</th>
                         <th>Talleres</th>
                         <th>Ideas</th>
+                        <th style="text-align: center;">Acción</th>
                     </tr>
                 </thead>
                 <tbody id="table-body">
@@ -168,29 +191,31 @@
     </div>
 
     <script>
-        // --- SIMULADOR DE DATOS (Memoria Local) ---
-        // Al recargar la página, volveremos a estos datos iniciales.
+        // --- BASE DE DATOS LOCAL (SIMULACIÓN) ---
+        // Lista inicial de personas requerida
         let datos = [
-            { name: "Pedro Belliard", depto: "Tecnología", points: 1250, talleres: 3, ideas: 5 },
-            { name: "Ana Torres", depto: "Recursos Humanos", points: 980, talleres: 2, ideas: 2 },
-            { name: "Carlos Ruiz", depto: "Ventas", points: 450, talleres: 0, ideas: 1 }
+            { name: "Jorge Tonos", depto: "Tecnología", points: 1500, talleres: 4, ideas: 6 },
+            { name: "Iris Cesa", depto: "Recursos Humanos", points: 1200, talleres: 3, ideas: 3 },
+            { name: "Rosanny Contreras", depto: "Operaciones", points: 1100, talleres: 2, ideas: 4 },
+            { name: "Cesar Diaz", depto: "Ventas", points: 950, talleres: 2, ideas: 1 },
+            { name: "Ramon Sanchez", depto: "Finanzas", points: 800, talleres: 1, ideas: 2 }
         ];
 
-        // Función principal que "pinta" todo en la pantalla
+        // Función principal que pinta la pantalla
         function renderizar() {
-            // 1. Ordenar datos (El que tiene más puntos va arriba)
+            // 1. Ordenar datos por puntos (Mayor a menor)
             datos.sort((a, b) => b.points - a.points);
 
-            // 2. Actualizar Tarjetas KPI
+            // 2. Actualizar KPIs
             document.getElementById('kpi-total').textContent = datos.length;
             const totalPuntos = datos.reduce((sum, item) => sum + parseInt(item.points), 0);
-            document.getElementById('kpi-puntos').textContent = totalPuntos.toLocaleString(); // Pone comas a los miles
+            document.getElementById('kpi-puntos').textContent = totalPuntos.toLocaleString();
             document.getElementById('kpi-lider').textContent = datos.length > 0 ? datos[0].name : "---";
 
-            // 3. Dibujar Gráfica de Puntos
+            // 3. Gráfica Puntos
             const maxPoints = Math.max(...datos.map(d => d.points)) || 100;
             const chartPoints = document.getElementById('chart-points');
-            chartPoints.innerHTML = ""; // Limpiar anterior
+            chartPoints.innerHTML = ""; 
             
             datos.forEach(d => {
                 const percent = (d.points / maxPoints) * 100;
@@ -206,14 +231,13 @@
                 `;
             });
 
-            // 4. Dibujar Gráfica de Ideas
+            // 4. Gráfica Ideas
             const maxIdeas = Math.max(...datos.map(d => d.ideas)) || 10;
             const chartIdeas = document.getElementById('chart-ideas');
             chartIdeas.innerHTML = ""; 
             
             datos.forEach(d => {
                 const percent = (d.ideas / maxIdeas) * 100;
-                // Usamos otro color (accent)
                 chartIdeas.innerHTML += `
                     <div class="bar-container">
                         <div class="bar-name">${d.name}</div>
@@ -226,11 +250,11 @@
                 `;
             });
 
-            // 5. Rellenar Tabla
+            // 5. Tabla con Botón Eliminar
             const tbody = document.getElementById('table-body');
             tbody.innerHTML = "";
             
-            datos.forEach(d => {
+            datos.forEach((d, index) => {
                 tbody.innerHTML += `
                     <tr>
                         <td style="font-weight: 600;">${d.name}</td>
@@ -238,40 +262,45 @@
                         <td style="color: var(--primary); font-weight: 800;">${d.points}</td>
                         <td>${d.talleres}</td>
                         <td>${d.ideas}</td>
+                        <td style="text-align: center;">
+                            <button class="btn-delete" onclick="eliminarGestor(${index})">🗑️ Eliminar</button>
+                        </td>
                     </tr>
                 `;
             });
         }
 
-        // Función para agregar un nuevo dato (Simulación)
+        // Agregar Nuevo Gestor
         function guardarDatoLocal(e) {
-            e.preventDefault(); // Evita recargar página
-
-            // Capturamos lo que escribiste
+            e.preventDefault();
             const nuevoGestor = {
                 name: document.getElementById('input-nombre').value,
                 depto: document.getElementById('input-depto').value,
                 points: parseInt(document.getElementById('input-puntos').value) || 0,
-                talleres: 0, // Por ahora lo dejamos en 0 fijo
+                talleres: 0,
                 ideas: parseInt(document.getElementById('input-ideas').value) || 0
             };
-
-            // Lo metemos al arreglo de datos
             datos.push(nuevoGestor);
-
-            // Volvemos a pintar la pantalla
             renderizar();
             cerrarModal();
-            
-            // Limpiamos el formulario
             document.getElementById('form-gestor').reset();
         }
 
-        // Control de la Ventana Modal
+        // Eliminar Gestor
+        function eliminarGestor(index) {
+            const nombre = datos[index].name;
+            const confirmacion = confirm(`¿Estás seguro de eliminar a ${nombre}?`);
+            if (confirmacion) {
+                datos.splice(index, 1); // Borra el elemento de la lista
+                renderizar(); // Vuelve a pintar la pantalla
+            }
+        }
+
+        // Modal
         function abrirModal() { document.getElementById('modal').style.display = 'flex'; }
         function cerrarModal() { document.getElementById('modal').style.display = 'none'; }
 
-        // Arrancar el sistema al cargar
+        // Iniciar
         renderizar();
 
     </script>
