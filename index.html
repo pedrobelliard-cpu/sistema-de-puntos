@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -17,14 +16,12 @@
             --edit: #f59e0b;
         }
 
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); color: var(--secondary); margin: 0; padding: 20px; }
-        .container { max-width: 1280px; margin: 0 auto; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); color: var(--secondary); margin: 0; padding: 20px; display: flex; flex-direction: column; min-height: 100vh; }
+        .container { max-width: 1280px; margin: 0 auto; width: 100%; flex: 1; }
 
         /* HEADER */
         .header { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 20px 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 30px; border-left: 5px solid var(--primary); }
         .header h1 { margin: 0; font-size: 22px; color: var(--secondary); text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        /* Subtítulo en Azul como pediste */
         .header p { margin: 5px 0 0; color: var(--primary); font-size: 15px; font-weight: 700; }
         
         .actions { display: flex; gap: 10px; }
@@ -51,8 +48,15 @@
         .bar-bg { flex: 1; background: #f1f5f9; height: 28px; border-radius: 6px; overflow: hidden; position: relative; }
         .bar-fill { height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; color: white; font-weight: bold; font-size: 12px; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
 
-        /* TABLA */
+        /* TABLA Y BUSCADOR */
         .table-box { background: var(--card); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        
+        .table-header-row { display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; border-bottom: 1px solid #e2e8f0; }
+        .table-title { font-weight: bold; font-size: 18px; }
+        
+        .search-container input { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; width: 250px; outline: none; transition: 0.2s; }
+        .search-container input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th { background: #f8fafc; padding: 18px 25px; font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; border-bottom: 1px solid #e2e8f0; }
         td { padding: 18px 25px; border-bottom: 1px solid #f1f5f9; color: #334155; }
@@ -70,6 +74,9 @@
 
         .btn-delete { color: var(--danger); border-color: #fecaca; }
         .btn-delete:hover { background: var(--danger); color: white; }
+
+        /* FOOTER */
+        .footer { margin-top: 40px; text-align: center; color: #94a3b8; font-size: 12px; padding: 20px; border-top: 1px solid #e2e8f0; }
 
         /* MODAL */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 100; justify-content: center; align-items: center; }
@@ -95,15 +102,15 @@
 
         .total-preview { grid-column: span 2; background: #eff6ff; padding: 15px; text-align: center; border-radius: 8px; color: var(--primary); font-weight: 800; font-size: 18px; border: 1px solid #bfdbfe; margin-top: 10px; }
 
-        /* Estilo para el input "OTRO" que aparece */
         #div-otro-depto { animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         @media print {
-            .actions, .btn-group-action, th:last-child, td:last-child { display: none !important; }
+            .actions, .btn-group-action, th:last-child, td:last-child, .search-container { display: none !important; }
             body { background: white; padding: 0; }
             .container { max-width: 100%; }
             .card, .chart-box, .table-box { box-shadow: none; border: 1px solid #ccc; }
+            .footer { display: none; }
         }
 
     </style>
@@ -154,8 +161,11 @@
         </div>
 
         <div class="table-box">
-            <div class="chart-header" style="margin: 0; padding: 20px 25px; border-bottom: 1px solid #e2e8f0;">
-                Directorio y Desglose de Actividades
+            <div class="table-header-row">
+                <div class="table-title">Directorio y Desglose</div>
+                <div class="search-container">
+                    <input type="text" id="input-search" placeholder="🔍 Buscar por nombre o ID..." onkeyup="renderizar()">
+                </div>
             </div>
             <table>
                 <thead>
@@ -173,6 +183,10 @@
                 </thead>
                 <tbody id="table-body"></tbody>
             </table>
+        </div>
+
+        <div class="footer">
+            Sistema Lanza tu Idea v0.1 © 2024 • Departamento de Investigación Aplicada a la Innovación • Uso Interno Confidencial
         </div>
 
     </div>
@@ -341,15 +355,26 @@
         }
 
         function renderizar() {
+            // Filtrado por buscador
+            const termino = document.getElementById('input-search') ? document.getElementById('input-search').value.toLowerCase() : "";
+            
+            // Recalcular puntos
             datos.forEach(d => d.points = calcularPuntos(d));
             datos.sort((a, b) => b.points - a.points);
+
+            // Filtrar datos para mostrar en tabla (no afecta gráficas ni KPIs globales)
+            const datosFiltrados = datos.filter(d => 
+                d.name.toLowerCase().includes(termino) || 
+                d.id.includes(termino) ||
+                d.depto.toLowerCase().includes(termino)
+            );
 
             document.getElementById('kpi-total').textContent = datos.length;
             const totalGlobal = datos.reduce((sum, item) => sum + item.points, 0);
             document.getElementById('kpi-puntos').textContent = totalGlobal.toLocaleString();
             document.getElementById('kpi-lider').textContent = datos.length > 0 ? datos[0].name : "---";
 
-            // Gráficas
+            // Gráficas (Siempre muestran el TOP Global, independiente de la búsqueda)
             const chartPoints = document.getElementById('chart-points');
             chartPoints.innerHTML = "";
             const maxPoints = Math.max(...datos.map(d => d.points)) || 100;
@@ -388,30 +413,37 @@
                 }
             });
 
-            // Tabla
+            // Tabla (Usa datos filtrados)
             const tbody = document.getElementById('table-body');
             tbody.innerHTML = "";
             
-            datos.forEach((d, index) => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td><span class="id-cell">${d.id}</span></td>
-                        <td style="font-weight: 600;">${d.name}</td>
-                        <td><span class="badge">${d.depto}</span></td>
-                        <td style="text-align: center;">${d.formacion ? '✅' : '-'}</td>
-                        <td style="text-align: center;">${d.talleres}</td>
-                        <td style="text-align: center;">${d.ideas}</td>
-                        <td style="text-align: center;">${d.evento ? '✅' : '-'}</td>
-                        <td style="color: var(--primary); font-weight: 800;">${d.points}</td>
-                        <td style="text-align: center;">
-                            <div class="btn-group-action">
-                                <button class="btn-icon btn-edit" onclick="cargarEdicion(${index})" title="Modificar">✏️</button>
-                                <button class="btn-icon btn-delete" onclick="eliminarGestor(${index})" title="Eliminar">🗑️</button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            });
+            if (datosFiltrados.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 20px; color: #94a3b8;">No se encontraron resultados para "${termino}"</td></tr>`;
+            } else {
+                datosFiltrados.forEach((d) => {
+                    // Encontrar el índice real en el array original para poder editar/borrar
+                    const indexOriginal = datos.findIndex(item => item.id === d.id);
+                    
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><span class="id-cell">${d.id}</span></td>
+                            <td style="font-weight: 600;">${d.name}</td>
+                            <td><span class="badge" title="${d.depto}">${d.depto}</span></td>
+                            <td style="text-align: center;">${d.formacion ? '✅' : '-'}</td>
+                            <td style="text-align: center;">${d.talleres}</td>
+                            <td style="text-align: center;">${d.ideas}</td>
+                            <td style="text-align: center;">${d.evento ? '✅' : '-'}</td>
+                            <td style="color: var(--primary); font-weight: 800;">${d.points}</td>
+                            <td style="text-align: center;">
+                                <div class="btn-group-action">
+                                    <button class="btn-icon btn-edit" onclick="cargarEdicion(${indexOriginal})" title="Modificar">✏️</button>
+                                    <button class="btn-icon btn-delete" onclick="eliminarGestor(${indexOriginal})" title="Eliminar">🗑️</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
         }
 
         // --- LÓGICA DEPARTAMENTOS ---
@@ -426,7 +458,7 @@
             } else {
                 divOtro.style.display = 'none';
                 inputOtro.removeAttribute('required');
-                inputOtro.value = ''; // Limpiar si se oculta
+                inputOtro.value = ''; 
             }
         }
 
@@ -434,7 +466,7 @@
         function abrirModal() { 
             indiceEdicion = -1; 
             document.getElementById('form-gestor').reset();
-            verificarOtroDepto(); // Resetear estado OTRO
+            verificarOtroDepto(); 
             document.getElementById('modal-title').textContent = "Registrar Nuevo Gestor";
             document.getElementById('btn-save-text').textContent = "Guardar Registro";
             document.getElementById('input-id').disabled = false; 
@@ -449,19 +481,16 @@
             document.getElementById('input-id').value = gestor.id;
             document.getElementById('input-nombre').value = gestor.name;
             
-            // Lógica inteligente para cargar el departamento
             const select = document.getElementById('input-depto');
             const opciones = Array.from(select.options).map(o => o.value);
             
             if (opciones.includes(gestor.depto)) {
-                // Si existe en la lista, selecciónalo
                 select.value = gestor.depto;
             } else {
-                // Si NO existe (era uno manual), selecciona OTRO y llena el input
                 select.value = 'OTRO';
                 document.getElementById('input-otro-depto').value = gestor.depto;
             }
-            verificarOtroDepto(); // Actualizar visibilidad del input OTRO
+            verificarOtroDepto(); 
 
             document.getElementById('check-formacion').checked = gestor.formacion;
             document.getElementById('input-talleres').value = gestor.talleres;
@@ -482,7 +511,6 @@
             e.preventDefault();
             const idInput = document.getElementById('input-id').value;
             
-            // Obtener el departamento correcto (Select o Input Manual)
             const select = document.getElementById('input-depto');
             let departamentoFinal = select.value;
             if (departamentoFinal === 'OTRO') {
@@ -496,7 +524,7 @@
             const gestorFormulario = {
                 id: idInput,
                 name: document.getElementById('input-nombre').value,
-                depto: departamentoFinal, // Guardamos el valor final
+                depto: departamentoFinal, 
                 formacion: document.getElementById('check-formacion').checked,
                 talleres: parseInt(document.getElementById('input-talleres').value) || 0,
                 mentoria: parseInt(document.getElementById('input-mentoria').value) || 0,
