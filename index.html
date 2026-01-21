@@ -14,7 +14,7 @@
             --bg: #f1f5f9;            
             --card: #ffffff;          
             --danger: #ef4444;
-            --edit: #f59e0b; /* Color para el botón editar */
+            --edit: #f59e0b;
         }
 
         body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); color: var(--secondary); margin: 0; padding: 20px; }
@@ -23,7 +23,9 @@
         /* HEADER */
         .header { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 20px 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 30px; border-left: 5px solid var(--primary); }
         .header h1 { margin: 0; font-size: 22px; color: var(--secondary); text-transform: uppercase; letter-spacing: 0.5px; }
-        .header p { margin: 5px 0 0; color: #64748b; font-size: 14px; font-weight: 500; }
+        
+        /* CAMBIO AQUI: Texto en azul y negrita */
+        .header p { margin: 5px 0 0; color: var(--primary); font-size: 15px; font-weight: 700; }
         
         .actions { display: flex; gap: 10px; }
 
@@ -59,9 +61,8 @@
         .badge { background: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
         .id-cell { font-family: monospace; font-weight: bold; color: #64748b; background: #f1f5f9; padding: 4px 8px; border-radius: 4px; font-size: 13px; border: 1px solid #e2e8f0; }
         
-        /* BOTONES DE ACCIÓN (NUEVOS) */
+        /* BOTONES DE ACCIÓN */
         .btn-group-action { display: flex; gap: 8px; justify-content: center; }
-        
         .btn-icon { border: 1px solid #e2e8f0; background: white; padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: 0.2s; font-size: 14px; }
         
         .btn-edit { color: var(--primary); border-color: #bfdbfe; }
@@ -111,7 +112,7 @@
         <div class="header">
             <div>
                 <h1>Dep. Investigación Aplicada a la Innovación</h1>
-                <p>Panel de Control Oficial</p>
+                <p>Lanza tu Idea 0.1 - Módulo de Gestión de Puntos</p>
             </div>
             <div class="actions">
                 <button class="btn-print" onclick="window.print()">
@@ -255,7 +256,7 @@
     </div>
 
     <script>
-        // --- BASE DE DATOS (Con tu información intacta) ---
+        // --- BASE DE DATOS INICIAL ---
         let datos = [
             { id: "1045", name: "Jorge Tonos", depto: "Tecnología", formacion: true, talleres: 3, mentoria: 2, ideas: 2, evento: true, premio: 0, points: 0 },
             { id: "2033", name: "Iris Cesa", depto: "Recursos Humanos", formacion: true, talleres: 2, mentoria: 1, ideas: 1, evento: false, premio: 0, points: 0 },
@@ -264,10 +265,9 @@
             { id: "5088", name: "Ramon Sanchez", depto: "Finanzas", formacion: true, talleres: 1, mentoria: 0, ideas: 0, evento: false, premio: 0, points: 0 }
         ];
 
-        // VARIABLE PARA CONTROLAR SI EDITAMOS
-        let indiceEdicion = -1; // -1 significa que estamos creando uno nuevo
+        let indiceEdicion = -1; // -1 significa nuevo
 
-        // --- LÓGICA DE CÁLCULO SEGÚN NORMATIVA (INTACTA) ---
+        // --- CÁLCULO NORMATIVA ---
         function calcularPuntos(d) {
             let total = 0;
             if (d.formacion) total += 400;          
@@ -280,7 +280,6 @@
         }
 
         function renderizar() {
-            // Calcular y Ordenar
             datos.forEach(d => d.points = calcularPuntos(d));
             datos.sort((a, b) => b.points - a.points);
 
@@ -329,7 +328,7 @@
                 }
             });
 
-            // Tabla con BOTONES NUEVOS
+            // Tabla
             const tbody = document.getElementById('table-body');
             tbody.innerHTML = "";
             
@@ -346,8 +345,8 @@
                         <td style="color: var(--primary); font-weight: 800;">${d.points}</td>
                         <td style="text-align: center;">
                             <div class="btn-group-action">
-                                <button class="btn-icon btn-edit" onclick="cargarEdicion(${index})" title="Modificar Datos">✏️</button>
-                                <button class="btn-icon btn-delete" onclick="eliminarGestor(${index})" title="Eliminar Registro">🗑️</button>
+                                <button class="btn-icon btn-edit" onclick="cargarEdicion(${index})" title="Modificar">✏️</button>
+                                <button class="btn-icon btn-delete" onclick="eliminarGestor(${index})" title="Eliminar">🗑️</button>
                             </div>
                         </td>
                     </tr>
@@ -355,25 +354,21 @@
             });
         }
 
-        // FUNCIONES DE FORMULARIO INTELIGENTE
-        
-        // 1. Abrir modal para NUEVO
+        // --- FORMULARIO ---
         function abrirModal() { 
-            indiceEdicion = -1; // Modo Crear
+            indiceEdicion = -1; 
             document.getElementById('form-gestor').reset();
             document.getElementById('modal-title').textContent = "Registrar Nuevo Gestor";
             document.getElementById('btn-save-text').textContent = "Guardar Registro";
-            document.getElementById('input-id').disabled = false; // El ID se puede escribir si es nuevo
+            document.getElementById('input-id').disabled = false; 
             document.getElementById('preview-total').textContent = "0";
             document.getElementById('modal').style.display = 'flex'; 
         }
 
-        // 2. Abrir modal para EDITAR
         function cargarEdicion(index) {
-            indiceEdicion = index; // Modo Editar
+            indiceEdicion = index; 
             const gestor = datos[index];
 
-            // Rellenar formulario con datos existentes
             document.getElementById('input-id').value = gestor.id;
             document.getElementById('input-nombre').value = gestor.name;
             document.getElementById('input-depto').value = gestor.depto;
@@ -385,19 +380,16 @@
             document.getElementById('check-evento').checked = gestor.evento;
             document.getElementById('input-premio').value = gestor.premio;
 
-            // Cambiar textos visuales
             document.getElementById('modal-title').textContent = "Modificar Datos del Gestor";
             document.getElementById('btn-save-text').textContent = "Guardar Cambios";
-            document.getElementById('input-id').disabled = true; // Bloqueamos el ID para no causar líos
+            document.getElementById('input-id').disabled = true; 
             
-            calcularTotalEnVivo(); // Mostrar puntos actuales
+            calcularTotalEnVivo();
             document.getElementById('modal').style.display = 'flex';
         }
 
-        // 3. Guardar (Funciona para ambos casos)
         function guardarDatoLocal(e) {
             e.preventDefault();
-            
             const idInput = document.getElementById('input-id').value;
 
             const gestorFormulario = {
@@ -414,14 +406,12 @@
             };
 
             if (indiceEdicion === -1) {
-                // MODO CREAR: Chequeamos que el ID no exista
                 if(datos.find(d => d.id === idInput)) {
                     alert("Error: El ID " + idInput + " ya existe.");
                     return;
                 }
                 datos.push(gestorFormulario);
             } else {
-                // MODO EDITAR: Reemplazamos el viejo por el nuevo
                 datos[indiceEdicion] = gestorFormulario;
             }
 
@@ -450,7 +440,7 @@
 
         function cerrarModal() { 
             document.getElementById('modal').style.display = 'none'; 
-            indiceEdicion = -1; // Resetear siempre
+            indiceEdicion = -1;
         }
 
         renderizar();
