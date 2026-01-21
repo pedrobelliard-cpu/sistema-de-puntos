@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión - Innovación</title>
     <style>
-        /* --- ESTILOS VISUALES --- */
+        /* --- ESTILOS VISUALES (INTACTOS) --- */
         :root {
             --primary: #2563eb;       
             --secondary: #1e293b;     
@@ -16,7 +16,7 @@
         }
 
         body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); color: var(--secondary); margin: 0; padding: 20px; }
-        .container { max-width: 1200px; margin: 0 auto; }
+        .container { max-width: 1280px; margin: 0 auto; }
 
         /* HEADER */
         .header { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 20px 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 30px; }
@@ -50,30 +50,40 @@
         /* TABLA */
         .table-box { background: var(--card); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { background: #f8fafc; padding: 18px 25px; font-size: 12px; text-transform: uppercase; color: #64748b; font-weight: 700; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f8fafc; padding: 18px 25px; font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; border-bottom: 1px solid #e2e8f0; }
         td { padding: 18px 25px; border-bottom: 1px solid #f1f5f9; color: #334155; }
         tr:last-child td { border-bottom: none; }
         tr:hover { background-color: #f8fafc; }
         .badge { background: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
-        .id-cell { font-family: monospace; font-weight: bold; color: #64748b; background: #f1f5f9; padding: 4px 8px; border-radius: 4px; font-size: 13px; }
+        .id-cell { font-family: monospace; font-weight: bold; color: #64748b; background: #f1f5f9; padding: 4px 8px; border-radius: 4px; font-size: 13px; border: 1px solid #e2e8f0; }
         
         .btn-delete { background: transparent; border: 1px solid #fee2e2; color: var(--danger); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.2s; }
         .btn-delete:hover { background: var(--danger); color: white; }
 
         /* MODAL */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 100; justify-content: center; align-items: center; }
-        .modal-content { background: white; width: 90%; max-width: 450px; padding: 30px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); animation: slideIn 0.3s ease; }
+        .modal-content { background: white; width: 90%; max-width: 600px; padding: 30px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); animation: slideIn 0.3s ease; max-height: 90vh; overflow-y: auto; }
         
         @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-full { grid-column: span 2; }
+
         .form-label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: #475569; }
-        .form-input { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 16px; font-size: 15px; outline: none; transition: border 0.2s; box-sizing: border-box; }
+        .form-input { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 5px; font-size: 15px; outline: none; transition: border 0.2s; box-sizing: border-box; }
         .form-input:focus { border-color: var(--primary); }
+        .hint { font-size: 12px; color: #94a3b8; margin-bottom: 10px; display: block; }
+
+        .checkbox-wrapper { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; }
+        .checkbox-wrapper:hover { background: #f8fafc; }
         
-        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
+        .btn-group { display: flex; gap: 10px; margin-top: 20px; grid-column: span 2; }
         .btn-save { flex: 2; background: var(--secondary); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .btn-cancel { flex: 1; background: transparent; color: #64748b; border: 2px solid #e2e8f0; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .btn-save:hover { background: #0f172a; }
+
+        /* PREVIEW TOTAL */
+        .total-preview { grid-column: span 2; background: #eff6ff; padding: 15px; text-align: center; border-radius: 8px; color: var(--primary); font-weight: 800; font-size: 18px; border: 1px solid #bfdbfe; margin-top: 10px; }
 
         @media print {
             .actions, .btn-delete, th:last-child, td:last-child { display: none !important; }
@@ -91,11 +101,11 @@
         <div class="header">
             <div>
                 <h1>Dep. Investigación Aplicada a la Innovación</h1>
-                <p>Sistema de Gestión de Puntos</p>
+                <p>Panel de Control Oficial</p>
             </div>
             <div class="actions">
                 <button class="btn-print" onclick="window.print()">
-                    🖨️ Imprimir Reporte
+                    🖨️ Imprimir
                 </button>
                 <button class="btn-main" onclick="abrirModal()">
                     <span>+</span> Nuevo Gestor
@@ -109,39 +119,41 @@
                 <div class="kpi-number" id="kpi-total">0</div>
             </div>
             <div class="card">
-                <div class="kpi-title">Puntos Acumulados</div>
+                <div class="kpi-title">Puntos Totales (PI)</div>
                 <div class="kpi-number" id="kpi-puntos" style="color: var(--primary);">0</div>
             </div>
             <div class="card">
-                <div class="kpi-title">Líder Actual</div>
+                <div class="kpi-title">Top Innovador</div>
                 <div class="kpi-number" id="kpi-lider" style="font-size: 24px; color: var(--accent);">---</div>
             </div>
         </div>
 
         <div class="charts-section">
             <div class="chart-box">
-                <div class="chart-header">🏆 Ranking por Puntos</div>
+                <div class="chart-header">🏆 Ranking Global (Puntos PI)</div>
                 <div id="chart-points"></div>
             </div>
             <div class="chart-box">
-                <div class="chart-header">💡 Actividad (Ideas)</div>
+                <div class="chart-header">💡 Ideas Propias Implementadas</div>
                 <div id="chart-ideas"></div>
             </div>
         </div>
 
         <div class="table-box">
             <div class="chart-header" style="margin: 0; padding: 20px 25px; border-bottom: 1px solid #e2e8f0;">
-                Directorio de Gestores Activos
+                Directorio y Desglose de Actividades
             </div>
             <table>
                 <thead>
                     <tr>
-                        <th style="width: 100px;">ID Empleado</th>
-                        <th>Nombre Completo</th>
-                        <th>Departamento</th>
-                        <th>Puntos (PI)</th>
-                        <th>Talleres</th>
-                        <th>Ideas</th>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Depto</th>
+                        <th title="Completó Formación">Form.</th>
+                        <th title="Talleres Asistidos">Talleres</th>
+                        <th title="Ideas Propias">Ideas</th>
+                        <th title="Actividad Anual">Evento</th>
+                        <th>Total PI</th>
                         <th style="text-align: center;">Acción</th>
                     </tr>
                 </thead>
@@ -153,70 +165,125 @@
 
     <div class="modal-overlay" id="modal">
         <div class="modal-content">
-            <h2 style="margin-top: 0; margin-bottom: 20px; color: var(--secondary);">Registrar Nuevo Gestor</h2>
-            <form id="form-gestor" onsubmit="guardarDatoLocal(event)">
+            <h2 style="margin-top: 0; margin-bottom: 20px; color: var(--secondary);">Registro y Cálculo de Puntos</h2>
+            <form id="form-gestor" onsubmit="guardarDatoLocal(event)" oninput="calcularTotalEnVivo()">
                 
-                <label class="form-label">Número de Empleado (4 dígitos)</label>
-                <input type="text" id="input-id" class="form-input" placeholder="Ej: 1001" maxlength="4" pattern="\d{4}" title="Debe ser 4 dígitos numéricos" required>
-
-                <label class="form-label">Nombre del Colaborador</label>
-                <input type="text" id="input-nombre" class="form-input" placeholder="Ej: Maria Gonzalez" required>
-                
-                <label class="form-label">Departamento</label>
-                <select id="input-depto" class="form-input">
-                    <option value="Tecnología">Tecnología</option>
-                    <option value="Recursos Humanos">Recursos Humanos</option>
-                    <option value="Ventas">Ventas</option>
-                    <option value="Operaciones">Operaciones</option>
-                    <option value="Finanzas">Finanzas</option>
-                    <option value="Investigación">Investigación</option>
-                </select>
-
-                <div style="display: flex; gap: 15px;">
-                    <div style="flex: 1;">
-                        <label class="form-label">Puntos</label>
-                        <input type="number" id="input-puntos" class="form-input" placeholder="0" required>
+                <div class="form-grid">
+                    <div>
+                        <label class="form-label">ID Empleado (4 dígitos)</label>
+                        <input type="text" id="input-id" class="form-input" placeholder="Ej: 1045" maxlength="4" pattern="\d{4}" title="Debe ser 4 dígitos" required>
                     </div>
-                    <div style="flex: 1;">
-                        <label class="form-label">Ideas</label>
-                        <input type="number" id="input-ideas" class="form-input" placeholder="0" required>
+                    <div>
+                        <label class="form-label">Departamento</label>
+                        <select id="input-depto" class="form-input">
+                            <option value="Tecnología">Tecnología</option>
+                            <option value="Recursos Humanos">Recursos Humanos</option>
+                            <option value="Ventas">Ventas</option>
+                            <option value="Operaciones">Operaciones</option>
+                            <option value="Finanzas">Finanzas</option>
+                            <option value="Investigación">Investigación</option>
+                        </select>
                     </div>
-                </div>
+                    <div class="form-full">
+                        <label class="form-label">Nombre del Colaborador</label>
+                        <input type="text" id="input-nombre" class="form-input" placeholder="Nombre completo" required>
+                    </div>
 
-                <div class="btn-group">
-                    <button type="button" class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
-                    <button type="submit" class="btn-save">Guardar Registro</button>
+                    <div class="form-full" style="border-top: 1px solid #e2e8f0; margin-top: 10px; padding-top: 10px;">
+                        <label class="form-label" style="color: var(--primary);">ASIGNACIÓN DE PUNTOS (Normativa)</label>
+                    </div>
+
+                    <div class="form-full">
+                        <label class="checkbox-wrapper">
+                            <input type="checkbox" id="check-formacion">
+                            <span>Completó Programa de Formación Gestor (+400 PI)</span>
+                        </label>
+                    </div>
+
+                    <div>
+                        <label class="form-label">Talleres Asistidos</label>
+                        <input type="number" id="input-talleres" class="form-input" placeholder="0" min="0" max="3">
+                        <span class="hint">* 200 PI c/u (Máx 3)</span>
+                    </div>
+
+                    <div>
+                        <label class="form-label">Acompañamiento Ideadores</label>
+                        <input type="number" id="input-mentoria" class="form-input" placeholder="0" min="0" max="5">
+                        <span class="hint">* 150 PI c/u (Máx 5)</span>
+                    </div>
+
+                    <div>
+                        <label class="form-label">Ideas Propias Implementadas</label>
+                        <input type="number" id="input-ideas" class="form-input" placeholder="0" min="0">
+                        <span class="hint">* 400 PI por idea</span>
+                    </div>
+
+                    <div>
+                        <label class="form-label">Puntos por Reconocimiento</label>
+                        <input type="number" id="input-premio" class="form-input" placeholder="0" min="0">
+                        <span class="hint">* 1000 - 3000 PI</span>
+                    </div>
+
+                     <div class="form-full">
+                        <label class="checkbox-wrapper">
+                            <input type="checkbox" id="check-evento">
+                            <span>Participó en Actividad Anual (+500 PI)</span>
+                        </label>
+                    </div>
+
+                    <div class="total-preview">
+                        Total Calculado: <span id="preview-total">0</span> PI
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="button" class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
+                        <button type="submit" class="btn-save">Guardar Registro</button>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        // --- BASE DE DATOS (Con IDs únicos) ---
+        // --- BASE DE DATOS (Actualizada con campos de la normativa) ---
         let datos = [
-            { id: "1045", name: "Jorge Tonos", depto: "Tecnología", points: 1500, talleres: 4, ideas: 6 },
-            { id: "2033", name: "Iris Cesa", depto: "Recursos Humanos", points: 1200, talleres: 3, ideas: 3 },
-            { id: "3012", name: "Rosanny Contreras", depto: "Operaciones", points: 1100, talleres: 2, ideas: 4 },
-            { id: "4056", name: "Cesar Diaz", depto: "Ventas", points: 950, talleres: 2, ideas: 1 },
-            { id: "5088", name: "Ramon Sanchez", depto: "Finanzas", points: 800, talleres: 1, ideas: 2 }
+            { id: "1045", name: "Jorge Tonos", depto: "Tecnología", formacion: true, talleres: 3, mentoria: 2, ideas: 2, evento: true, premio: 0, points: 0 },
+            { id: "2033", name: "Iris Cesa", depto: "Recursos Humanos", formacion: true, talleres: 2, mentoria: 1, ideas: 1, evento: false, premio: 0, points: 0 },
+            { id: "3012", name: "Rosanny Contreras", depto: "Operaciones", formacion: true, talleres: 3, mentoria: 4, ideas: 0, evento: true, premio: 0, points: 0 },
+            { id: "4056", name: "Cesar Diaz", depto: "Ventas", formacion: false, talleres: 2, mentoria: 0, ideas: 1, evento: false, premio: 0, points: 0 },
+            { id: "5088", name: "Ramon Sanchez", depto: "Finanzas", formacion: true, talleres: 1, mentoria: 0, ideas: 0, evento: false, premio: 0, points: 0 }
         ];
 
+        // --- LÓGICA DE CÁLCULO SEGÚN DOCUMENTO ---
+        function calcularPuntos(d) {
+            let total = 0;
+            if (d.formacion) total += 400;          // Programa Formación 
+            total += (d.talleres || 0) * 200;       // Talleres (200 PI) 
+            total += (d.mentoria || 0) * 150;       // Acompañamiento (150 PI) 
+            total += (d.ideas || 0) * 400;          // Ideas propias (400 PI) 
+            if (d.evento) total += 500;             // Actividad anual 
+            total += (d.premio || 0);               // Reconocimiento 
+            return total;
+        }
+
         function renderizar() {
-            // Ordenar por puntos (Mayor a menor)
+            // 1. Calcular puntos para todos
+            datos.forEach(d => d.points = calcularPuntos(d));
+
+            // 2. Ordenar por puntos
             datos.sort((a, b) => b.points - a.points);
 
-            // KPIs
-            document.getElementById('kpi-total').textContent = datos.length.toLocaleString(); // Formato con comas para miles
-            const totalPuntos = datos.reduce((sum, item) => sum + parseInt(item.points), 0);
-            document.getElementById('kpi-puntos').textContent = totalPuntos.toLocaleString();
+            // 3. KPIs
+            document.getElementById('kpi-total').textContent = datos.length;
+            const totalGlobal = datos.reduce((sum, item) => sum + item.points, 0);
+            document.getElementById('kpi-puntos').textContent = totalGlobal.toLocaleString();
             document.getElementById('kpi-lider').textContent = datos.length > 0 ? datos[0].name : "---";
 
-            // Gráficas
-            const maxPoints = Math.max(...datos.map(d => d.points)) || 100;
+            // 4. Gráfica Puntos (Top 10)
             const chartPoints = document.getElementById('chart-points');
-            chartPoints.innerHTML = ""; 
+            chartPoints.innerHTML = "";
+            const maxPoints = Math.max(...datos.map(d => d.points)) || 100;
             
-            // Limitamos la gráfica a los TOP 10 para que no se vea gigante si hay 1000 empleados
             datos.slice(0, 10).forEach(d => {
                 const percent = (d.points / maxPoints) * 100;
                 chartPoints.innerHTML += `
@@ -231,26 +298,28 @@
                 `;
             });
 
-            // Gráfica Ideas (Top 10)
-            const maxIdeas = Math.max(...datos.map(d => d.ideas)) || 10;
+            // 5. Gráfica Ideas (Top 10)
             const chartIdeas = document.getElementById('chart-ideas');
-            chartIdeas.innerHTML = ""; 
-            
+            chartIdeas.innerHTML = "";
+            const maxIdeas = Math.max(...datos.map(d => d.ideas)) || 5;
+
             datos.slice(0, 10).forEach(d => {
                 const percent = (d.ideas / maxIdeas) * 100;
-                chartIdeas.innerHTML += `
-                    <div class="bar-container">
-                        <div class="bar-name">${d.name}</div>
-                        <div class="bar-bg">
-                            <div class="bar-fill" style="width: ${percent}%; background-color: var(--accent);">
-                                ${d.ideas}
+                if(d.ideas >= 0) {
+                    chartIdeas.innerHTML += `
+                        <div class="bar-container">
+                            <div class="bar-name">${d.name}</div>
+                            <div class="bar-bg">
+                                <div class="bar-fill" style="width: ${percent}%; background-color: var(--accent);">
+                                    ${d.ideas}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                `;
+                    `;
+                }
             });
 
-            // Tabla Completa (Aquí sí salen todos)
+            // 6. Tabla Detallada
             const tbody = document.getElementById('table-body');
             tbody.innerHTML = "";
             
@@ -260,9 +329,11 @@
                         <td><span class="id-cell">${d.id}</span></td>
                         <td style="font-weight: 600;">${d.name}</td>
                         <td><span class="badge">${d.depto}</span></td>
+                        <td style="text-align: center;">${d.formacion ? '✅' : '-'}</td>
+                        <td style="text-align: center;">${d.talleres}</td>
+                        <td style="text-align: center;">${d.ideas}</td>
+                        <td style="text-align: center;">${d.evento ? '✅' : '-'}</td>
                         <td style="color: var(--primary); font-weight: 800;">${d.points}</td>
-                        <td>${d.talleres}</td>
-                        <td>${d.ideas}</td>
                         <td style="text-align: center;">
                             <button class="btn-delete" onclick="eliminarGestor(${index})">🗑️</button>
                         </td>
@@ -271,33 +342,51 @@
             });
         }
 
+        // CALCULO EN VIVO (Para que veas cuánto suma mientras llenas el form)
+        function calcularTotalEnVivo() {
+            const temp = {
+                formacion: document.getElementById('check-formacion').checked,
+                talleres: parseInt(document.getElementById('input-talleres').value) || 0,
+                mentoria: parseInt(document.getElementById('input-mentoria').value) || 0,
+                ideas: parseInt(document.getElementById('input-ideas').value) || 0,
+                evento: document.getElementById('check-evento').checked,
+                premio: parseInt(document.getElementById('input-premio').value) || 0
+            };
+            document.getElementById('preview-total').textContent = calcularPuntos(temp).toLocaleString();
+        }
+
         function guardarDatoLocal(e) {
             e.preventDefault();
-            const nuevoGestor = {
-                id: document.getElementById('input-id').value,
-                name: document.getElementById('input-nombre').value,
-                depto: document.getElementById('input-depto').value,
-                points: parseInt(document.getElementById('input-puntos').value) || 0,
-                talleres: 0,
-                ideas: parseInt(document.getElementById('input-ideas').value) || 0
-            };
-            
-            // Validar que el ID no exista ya (opcional pero profesional)
-            const existe = datos.find(d => d.id === nuevoGestor.id);
-            if(existe) {
-                alert("¡Error! Ese número de empleado ya existe en el sistema.");
+            const nuevoID = document.getElementById('input-id').value;
+
+            // Validación ID único
+            if(datos.find(d => d.id === nuevoID)) {
+                alert("Error: El ID ya existe.");
                 return;
             }
+
+            const nuevoGestor = {
+                id: nuevoID,
+                name: document.getElementById('input-nombre').value,
+                depto: document.getElementById('input-depto').value,
+                formacion: document.getElementById('check-formacion').checked,
+                talleres: parseInt(document.getElementById('input-talleres').value) || 0,
+                mentoria: parseInt(document.getElementById('input-mentoria').value) || 0,
+                ideas: parseInt(document.getElementById('input-ideas').value) || 0,
+                evento: document.getElementById('check-evento').checked,
+                premio: parseInt(document.getElementById('input-premio').value) || 0,
+                points: 0
+            };
 
             datos.push(nuevoGestor);
             renderizar();
             cerrarModal();
             document.getElementById('form-gestor').reset();
+            document.getElementById('preview-total').textContent = "0";
         }
 
         function eliminarGestor(index) {
-            const nombre = datos[index].name;
-            if (confirm(`¿Eliminar gestor ${nombre} del sistema?`)) {
+            if (confirm("¿Estás seguro de eliminar este registro?")) {
                 datos.splice(index, 1);
                 renderizar();
             }
