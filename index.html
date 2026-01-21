@@ -4,213 +4,229 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión de Innovación</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" crossorigin></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" crossorigin></script>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.21.2/babel.min.js"></script>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.5.0/Recharts.min.js"></script>
-
     <style>
-        @media print {
-            body { background-color: white !important; }
-            .no-imprimir { display: none !important; }
-            .shadow-sm { box-shadow: none !important; border: 1px solid #ddd; }
-            /* Ajuste para que las gráficas salgan en papel */
-            .recharts-wrapper { margin: 0 auto; }
+        /* ESTILOS (CSS) - Todo incluido aquí para no depender de internet */
+        :root {
+            --primary: #2563eb;
+            --success: #10b981;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --gray: #64748b;
         }
-        #loading-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #f8fafc; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; z-index: 50;
+        body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        /* Encabezado */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .title h1 { margin: 0; font-size: 24px; }
+        .title p { margin: 5px 0 0; color: var(--gray); font-size: 14px; }
+        .btn-print { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 8px; }
+        .btn-print:hover { opacity: 0.9; }
+
+        /* Tarjetas KPI */
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .card { background: var(--card-bg); padding: 25px; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+        .kpi-value { font-size: 32px; font-weight: 800; margin: 10px 0 0; }
+        .kpi-label { color: var(--gray); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* Gráficas Manuales (Barras CSS) */
+        .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .chart-container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .chart-title { font-weight: bold; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        
+        /* Estilos de las barras */
+        .bar-row { display: flex; align-items: center; margin-bottom: 12px; font-size: 14px; }
+        .bar-label { width: 100px; text-align: right; padding-right: 10px; font-weight: 500; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .bar-track { flex: 1; background: #f1f5f9; height: 24px; border-radius: 4px; overflow: hidden; position: relative; }
+        .bar-fill { height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; color: white; font-size: 12px; font-weight: bold; transition: width 1s ease; }
+        
+        /* Tabla */
+        .table-container { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: #f8fafc; padding: 15px 20px; font-size: 12px; text-transform: uppercase; color: var(--gray); font-weight: 700; }
+        td { padding: 15px 20px; border-bottom: 1px solid #f1f5f9; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background-color: #f8fafc; }
+        .points-cell { color: var(--primary); font-weight: bold; }
+
+        /* Loading y Errores */
+        #loader { text-align: center; padding: 50px; font-size: 18px; color: var(--primary); font-weight: bold; }
+        
+        @media print {
+            body { background: white; padding: 0; }
+            .btn-print { display: none; }
+            .card, .chart-container, .table-container { box-shadow: none; border: 1px solid #ddd; }
         }
     </style>
 </head>
-<body class="bg-gray-50 text-slate-800">
+<body>
 
-    <div id="loading-screen">
-        <div class="text-blue-600 text-4xl mb-4 font-bold">Iniciando...</div>
-        <p class="text-slate-500">Conectando librerías...</p>
+    <div class="container">
+        
+        <div class="header">
+            <div class="title">
+                <h1>Gestión de Innovación</h1>
+                <p>Panel de Control de Puntos (PI)</p>
+            </div>
+            <button class="btn-print" onclick="window.print()">
+                🖨️ Imprimir
+            </button>
+        </div>
+
+        <div id="loader">Cargando datos...</div>
+
+        <div id="dashboard" style="display: none;">
+            
+            <div class="kpi-grid">
+                <div class="card">
+                    <div class="kpi-label">Gestores Activos</div>
+                    <div class="kpi-value" id="kpi-gestores">0</div>
+                </div>
+                <div class="card">
+                    <div class="kpi-label">Puntos Totales</div>
+                    <div class="kpi-value" id="kpi-puntos" style="color: #10b981;">0</div>
+                </div>
+                <div class="card">
+                    <div class="kpi-label">Líder Actual</div>
+                    <div class="kpi-value" id="kpi-lider" style="color: #8b5cf6; font-size: 24px;">-</div>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <div class="chart-title">Ranking de Puntos</div>
+                    <div id="chart-points"></div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">Talleres Realizados</div>
+                    <div id="chart-talleres"></div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="chart-title" style="margin: 0; padding: 20px; background: #fcfcfc;">Detalle Completo</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Departamento</th>
+                            <th>Puntos</th>
+                            <th>Talleres</th>
+                            <th>Ideas</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
-    <div id="root"></div>
+    <script>
+        // --- CONFIGURACIÓN ---
+        // PEGA TU LINK DE GOOGLE SCRIPT AQUI ABAJO
+        const URL_API = "AQUI_TU_URL_DE_GOOGLE_SCRIPT"; 
 
-    <script type="text/babel">
-        // --- 2. ESPERAMOS A QUE LA VENTANA CARGUE TODO ---
-        window.addEventListener('load', () => {
-            
-            // Ocultamos la pantalla de carga manual
-            const loader = document.getElementById('loading-screen');
-            if(loader) loader.style.display = 'none';
+        // --- LÓGICA PRINCIPAL (JAVASCRIPT PURO - SIN LIBRERÍAS) ---
+        
+        async function iniciarSistema() {
+            const loader = document.getElementById('loader');
+            const dashboard = document.getElementById('dashboard');
+            let data = [];
 
-            // Verificación final de seguridad
-            if (!window.Recharts) {
-                document.body.innerHTML = '<div style="padding:20px; color:red; text-align:center;"><h1>Error de Red</h1><p>No se pudieron descargar las gráficas. Revisa tu conexión a internet y recarga.</p></div>';
-                return;
+            try {
+                // 1. Obtener Datos
+                if (URL_API === "AQUI_TU_URL_DE_GOOGLE_SCRIPT" || URL_API === "") {
+                    // Datos de prueba si no hay URL
+                    console.log("Usando datos demo...");
+                    await new Promise(r => setTimeout(r, 800)); // Simular espera
+                    data = [
+                        { name: "Demo Ana", depto: "TI", points: 1500, talleres: 5, ideas: 4 },
+                        { name: "Demo Carlos", depto: "Ops", points: 1200, talleres: 3, ideas: 2 },
+                        { name: "Demo Lucia", depto: "RRHH", points: 800, talleres: 1, ideas: 5 },
+                        { name: "Demo Juan", depto: "Ventas", points: 400, talleres: 0, ideas: 1 }
+                    ];
+                } else {
+                    // Datos reales
+                    const response = await fetch(URL_API);
+                    data = await response.json();
+                }
+
+                // Ordenar por puntos (Mayor a menor)
+                data.sort((a, b) => b.points - a.points);
+
+                // 2. Rellenar KPIs
+                document.getElementById('kpi-gestores').textContent = data.length;
+                const totalPuntos = data.reduce((sum, item) => sum + (parseInt(item.points) || 0), 0);
+                document.getElementById('kpi-puntos').textContent = totalPuntos + " PI";
+                document.getElementById('kpi-lider').textContent = data.length > 0 ? data[0].name : "N/A";
+
+                // 3. Generar Gráfica de Barras (HTML puro)
+                const maxPoints = Math.max(...data.map(d => d.points));
+                const chartPoints = document.getElementById('chart-points');
+                
+                data.forEach(d => {
+                    const percent = (d.points / maxPoints) * 100;
+                    chartPoints.innerHTML += `
+                        <div class="bar-row">
+                            <div class="bar-label">${d.name}</div>
+                            <div class="bar-track">
+                                <div class="bar-fill" style="width: ${percent}%; background-color: #3b82f6;">
+                                    ${d.points}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                // 4. Generar Gráfica de Talleres
+                const maxTalleres = Math.max(...data.map(d => d.talleres)) || 1; // Evitar división por cero
+                const chartTalleres = document.getElementById('chart-talleres');
+
+                data.forEach(d => {
+                    const percent = (d.talleres / maxTalleres) * 100;
+                    // Solo mostramos si tiene talleres o al menos la barra vacía
+                    chartTalleres.innerHTML += `
+                        <div class="bar-row">
+                            <div class="bar-label">${d.name}</div>
+                            <div class="bar-track">
+                                <div class="bar-fill" style="width: ${percent}%; background-color: #10b981;">
+                                    ${d.talleres > 0 ? d.talleres : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                // 5. Rellenar Tabla
+                const tbody = document.getElementById('table-body');
+                data.forEach(d => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${d.name}</td>
+                            <td>${d.depto}</td>
+                            <td class="points-cell">${d.points}</td>
+                            <td>${d.talleres}</td>
+                            <td>${d.ideas}</td>
+                        </tr>
+                    `;
+                });
+
+                // Mostrar todo
+                loader.style.display = 'none';
+                dashboard.style.display = 'block';
+
+            } catch (error) {
+                loader.innerHTML = `<span style="color:red">Error: ${error.message}</span>`;
+                console.error(error);
             }
+        }
 
-            // --- INICIO DEL CÓDIGO REAL ---
-            
-            // PEGA TU URL DE GOOGLE SCRIPT AQUÍ
-            const URL_API = "AQUI_TU_URL_DE_GOOGLE_SCRIPT"; 
-
-            const { useState, useEffect } = React;
-            // Extraemos las herramientas de Recharts con cuidado
-            const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } = window.Recharts;
-
-            // Iconos simples
-            const IconPrinter = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>;
-            const IconUsers = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>;
-
-            const App = () => {
-                const [gestores, setGestores] = useState([]);
-                const [loading, setLoading] = useState(true);
-
-                useEffect(() => {
-                    // Si no hay URL configurada, ponemos datos falsos para que NO se vea blanco
-                    if (URL_API === "AQUI_TU_URL_DE_GOOGLE_SCRIPT" || URL_API === "") {
-                        setTimeout(() => {
-                            setGestores([
-                                { name: "Ejemplo Ana", depto: "TI", points: 1500, talleres: 3, ideas: 5 },
-                                { name: "Ejemplo Luis", depto: "RRHH", points: 800, talleres: 2, ideas: 1 }
-                            ]);
-                            setLoading(false);
-                        }, 500);
-                    } else {
-                        // Conexión real
-                        fetch(URL_API)
-                            .then(res => res.json())
-                            .then(data => {
-                                const ranking = Array.isArray(data) ? data.sort((a, b) => b.points - a.points) : [];
-                                setGestores(ranking);
-                                setLoading(false);
-                            })
-                            .catch(err => {
-                                console.error(err);
-                                alert("No se pudo conectar a la base de datos.");
-                                setLoading(false);
-                            });
-                    }
-                }, []);
-
-                if (loading) return <div className="p-10 text-center font-bold text-blue-600">Cargando datos...</div>;
-
-                return (
-                    <div className="min-h-screen pb-10 max-w-7xl mx-auto px-4 pt-8 font-sans">
-                        
-                        {/* ENCABEZADO */}
-                        <div className="flex flex-col md:flex-row justify-between items-center mb-8 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-                            <div className="mb-4 md:mb-0">
-                                <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Gestión de Innovación</h1>
-                                <p className="text-slate-500 font-medium">Panel de Control de Puntos (PI)</p>
-                            </div>
-                            <button onClick={() => window.print()} className="no-imprimir flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 transition font-bold shadow-md hover:shadow-lg">
-                                <IconPrinter /> Imprimir Reporte
-                            </button>
-                        </div>
-
-                        {/* TARJETAS KPI */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex items-center gap-4 hover:shadow-md transition">
-                                <div className="p-4 bg-blue-50 rounded-full text-blue-600"><IconUsers /></div>
-                                <div>
-                                    <p className="text-slate-500 text-sm font-bold uppercase tracking-wider">Gestores</p>
-                                    <h3 className="text-3xl font-black text-slate-800">{gestores.length}</h3>
-                                </div>
-                            </div>
-                            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition">
-                                 <p className="text-slate-500 text-sm font-bold uppercase tracking-wider">Puntos Globales</p>
-                                 <h3 className="text-3xl font-black text-emerald-600">
-                                    {gestores.reduce((acc, curr) => acc + (parseInt(curr.points) || 0), 0)} PI
-                                 </h3>
-                            </div>
-                            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition">
-                                 <p className="text-slate-500 text-sm font-bold uppercase tracking-wider">Líder Actual</p>
-                                 <h3 className="text-2xl font-black text-purple-600 truncate">
-                                    {gestores.length > 0 ? gestores[0].name : "-"}
-                                 </h3>
-                            </div>
-                        </div>
-
-                        {/* GRÁFICAS */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200" style={{ height: '450px' }}>
-                                <h2 className="text-xl font-bold mb-6 text-slate-800">Ranking de Puntos</h2>
-                                <div style={{ height: 350, width: '100%' }}>
-                                    <ResponsiveContainer>
-                                        <BarChart data={gestores}>
-                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                                            <XAxis dataKey="name" tick={{fontSize: 12, fill: '#64748b'}} interval={0} axisLine={false} tickLine={false} />
-                                            <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b'}} />
-                                            <Tooltip cursor={{fill: '#f8fafc'}} contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'}} />
-                                            <Bar dataKey="points" fill="#3b82f6" name="Puntos PI" radius={[4, 4, 0, 0]} barSize={50} />
-                                        </BarChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            </div>
-
-                            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200" style={{ height: '450px' }}>
-                                <h2 className="text-xl font-bold mb-6 text-slate-800">Desglose de Actividad</h2>
-                                <div style={{ height: 350, width: '100%' }}>
-                                    <ResponsiveContainer>
-                                        <BarChart data={gestores} layout="vertical">
-                                            <CartesianGrid strokeDasharray="3 3" horizontal={true} stroke="#e2e8f0" />
-                                            <XAxis type="number" hide />
-                                            <YAxis dataKey="name" type="category" width={100} tick={{fontSize: 11, fill: '#64748b'}} axisLine={false} tickLine={false} />
-                                            <Tooltip cursor={{fill: 'transparent'}} contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'}} />
-                                            <Legend wrapperStyle={{paddingTop: '20px'}} />
-                                            <Bar dataKey="talleres" stackId="a" fill="#10b981" name="Talleres" radius={[0, 0, 0, 0]} barSize={20} />
-                                            <Bar dataKey="ideas" stackId="a" fill="#8b5cf6" name="Ideas" radius={[0, 4, 4, 0]} barSize={20} />
-                                        </BarChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* TABLA DETALLADA */}
-                        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                            <div className="px-6 py-4 bg-slate-50 border-b border-slate-200">
-                                <h3 className="font-bold text-slate-800">Detalle Completo de Gestores</h3>
-                            </div>
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-left text-sm text-slate-600">
-                                    <thead className="bg-white text-slate-500 uppercase font-bold text-xs border-b border-slate-100">
-                                        <tr>
-                                            <th className="px-6 py-4">Nombre</th>
-                                            <th className="px-6 py-4">Departamento</th>
-                                            <th className="px-6 py-4">Puntos Totales</th>
-                                            <th className="px-6 py-4 text-center">Talleres</th>
-                                            <th className="px-6 py-4 text-center">Ideas</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-100">
-                                        {gestores.map((g, i) => (
-                                            <tr key={i} className="hover:bg-slate-50 transition-colors">
-                                                <td className="px-6 py-4 font-bold text-slate-900">{g.name}</td>
-                                                <td className="px-6 py-4">{g.depto}</td>
-                                                <td className="px-6 py-4 text-blue-600 font-extrabold">{g.points} PI</td>
-                                                <td className="px-6 py-4 text-center">{g.talleres}</td>
-                                                <td className="px-6 py-4 text-center">{g.ideas}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        
-                        <div className="text-center mt-10 mb-4 text-slate-400 text-xs no-imprimir">
-                            Sistema de Puntos v2.0 • Renderizado con React & Recharts
-                        </div>
-                    </div>
-                );
-            };
-
-            const root = ReactDOM.createRoot(document.getElementById('root'));
-            root.render(<App />);
-        });
+        // Arrancar
+        iniciarSistema();
     </script>
 </body>
 </html>
