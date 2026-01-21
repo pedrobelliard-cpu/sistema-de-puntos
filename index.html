@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestión de Innovación</title>
+    <title>Sistema de Gestión - Innovación</title>
     <style>
         /* --- ESTILOS VISUALES --- */
         :root {
@@ -12,7 +12,7 @@
             --accent: #10b981;        
             --bg: #f1f5f9;            
             --card: #ffffff;          
-            --danger: #ef4444;        /* Rojo para borrar */
+            --danger: #ef4444;
         }
 
         body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); color: var(--secondary); margin: 0; padding: 20px; }
@@ -20,8 +20,8 @@
 
         /* HEADER */
         .header { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 20px 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 30px; }
-        .header h1 { margin: 0; font-size: 24px; color: var(--secondary); }
-        .header p { margin: 5px 0 0; color: #64748b; font-size: 14px; }
+        .header h1 { margin: 0; font-size: 22px; color: var(--secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+        .header p { margin: 5px 0 0; color: #64748b; font-size: 14px; font-weight: 500; }
         
         .actions { display: flex; gap: 10px; }
 
@@ -31,7 +31,7 @@
         .btn-print { background: var(--secondary); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
         .btn-print:hover { background: #334155; }
 
-        /* TARJETAS KPI */
+        /* KPI CARDS */
         .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .card { background: var(--card); padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .kpi-title { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; font-weight: 700; }
@@ -43,7 +43,7 @@
         .chart-header { font-weight: bold; margin-bottom: 20px; font-size: 18px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; }
         
         .bar-container { display: flex; align-items: center; margin-bottom: 15px; font-size: 14px; }
-        .bar-name { width: 120px; text-align: right; padding-right: 15px; font-weight: 500; color: #475569; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .bar-name { width: 140px; text-align: right; padding-right: 15px; font-weight: 500; color: #475569; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .bar-bg { flex: 1; background: #f1f5f9; height: 28px; border-radius: 6px; overflow: hidden; position: relative; }
         .bar-fill { height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; color: white; font-weight: bold; font-size: 12px; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
 
@@ -55,8 +55,8 @@
         tr:last-child td { border-bottom: none; }
         tr:hover { background-color: #f8fafc; }
         .badge { background: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .id-cell { font-family: monospace; font-weight: bold; color: #64748b; background: #f1f5f9; padding: 4px 8px; border-radius: 4px; font-size: 13px; }
         
-        /* Botón Eliminar */
         .btn-delete { background: transparent; border: 1px solid #fee2e2; color: var(--danger); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.2s; }
         .btn-delete:hover { background: var(--danger); color: white; }
 
@@ -75,7 +75,6 @@
         .btn-cancel { flex: 1; background: transparent; color: #64748b; border: 2px solid #e2e8f0; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .btn-save:hover { background: #0f172a; }
 
-        /* ESTILOS DE IMPRESIÓN (Ocultar botones al imprimir) */
         @media print {
             .actions, .btn-delete, th:last-child, td:last-child { display: none !important; }
             body { background: white; padding: 0; }
@@ -91,12 +90,12 @@
         
         <div class="header">
             <div>
-                <h1>Gestión de Innovación</h1>
-                <p>Panel de Control Oficial</p>
+                <h1>Dep. Investigación Aplicada a la Innovación</h1>
+                <p>Sistema de Gestión de Puntos</p>
             </div>
             <div class="actions">
                 <button class="btn-print" onclick="window.print()">
-                    🖨️ Imprimir
+                    🖨️ Imprimir Reporte
                 </button>
                 <button class="btn-main" onclick="abrirModal()">
                     <span>+</span> Nuevo Gestor
@@ -122,24 +121,23 @@
         <div class="charts-section">
             <div class="chart-box">
                 <div class="chart-header">🏆 Ranking por Puntos</div>
-                <div id="chart-points">
-                    </div>
+                <div id="chart-points"></div>
             </div>
             <div class="chart-box">
                 <div class="chart-header">💡 Actividad (Ideas)</div>
-                <div id="chart-ideas">
-                    </div>
+                <div id="chart-ideas"></div>
             </div>
         </div>
 
         <div class="table-box">
             <div class="chart-header" style="margin: 0; padding: 20px 25px; border-bottom: 1px solid #e2e8f0;">
-                Listado Detallado de Gestores
+                Directorio de Gestores Activos
             </div>
             <table>
                 <thead>
                     <tr>
-                        <th>Nombre</th>
+                        <th style="width: 100px;">ID Empleado</th>
+                        <th>Nombre Completo</th>
                         <th>Departamento</th>
                         <th>Puntos (PI)</th>
                         <th>Talleres</th>
@@ -147,8 +145,7 @@
                         <th style="text-align: center;">Acción</th>
                     </tr>
                 </thead>
-                <tbody id="table-body">
-                    </tbody>
+                <tbody id="table-body"></tbody>
             </table>
         </div>
 
@@ -159,6 +156,9 @@
             <h2 style="margin-top: 0; margin-bottom: 20px; color: var(--secondary);">Registrar Nuevo Gestor</h2>
             <form id="form-gestor" onsubmit="guardarDatoLocal(event)">
                 
+                <label class="form-label">Número de Empleado (4 dígitos)</label>
+                <input type="text" id="input-id" class="form-input" placeholder="Ej: 1001" maxlength="4" pattern="\d{4}" title="Debe ser 4 dígitos numéricos" required>
+
                 <label class="form-label">Nombre del Colaborador</label>
                 <input type="text" id="input-nombre" class="form-input" placeholder="Ej: Maria Gonzalez" required>
                 
@@ -169,6 +169,7 @@
                     <option value="Ventas">Ventas</option>
                     <option value="Operaciones">Operaciones</option>
                     <option value="Finanzas">Finanzas</option>
+                    <option value="Investigación">Investigación</option>
                 </select>
 
                 <div style="display: flex; gap: 15px;">
@@ -191,33 +192,32 @@
     </div>
 
     <script>
-        // --- BASE DE DATOS LOCAL (SIMULACIÓN) ---
-        // Lista inicial de personas requerida
+        // --- BASE DE DATOS (Con IDs únicos) ---
         let datos = [
-            { name: "Jorge Tonos", depto: "Tecnología", points: 1500, talleres: 4, ideas: 6 },
-            { name: "Iris Cesa", depto: "Recursos Humanos", points: 1200, talleres: 3, ideas: 3 },
-            { name: "Rosanny Contreras", depto: "Operaciones", points: 1100, talleres: 2, ideas: 4 },
-            { name: "Cesar Diaz", depto: "Ventas", points: 950, talleres: 2, ideas: 1 },
-            { name: "Ramon Sanchez", depto: "Finanzas", points: 800, talleres: 1, ideas: 2 }
+            { id: "1045", name: "Jorge Tonos", depto: "Tecnología", points: 1500, talleres: 4, ideas: 6 },
+            { id: "2033", name: "Iris Cesa", depto: "Recursos Humanos", points: 1200, talleres: 3, ideas: 3 },
+            { id: "3012", name: "Rosanny Contreras", depto: "Operaciones", points: 1100, talleres: 2, ideas: 4 },
+            { id: "4056", name: "Cesar Diaz", depto: "Ventas", points: 950, talleres: 2, ideas: 1 },
+            { id: "5088", name: "Ramon Sanchez", depto: "Finanzas", points: 800, talleres: 1, ideas: 2 }
         ];
 
-        // Función principal que pinta la pantalla
         function renderizar() {
-            // 1. Ordenar datos por puntos (Mayor a menor)
+            // Ordenar por puntos (Mayor a menor)
             datos.sort((a, b) => b.points - a.points);
 
-            // 2. Actualizar KPIs
-            document.getElementById('kpi-total').textContent = datos.length;
+            // KPIs
+            document.getElementById('kpi-total').textContent = datos.length.toLocaleString(); // Formato con comas para miles
             const totalPuntos = datos.reduce((sum, item) => sum + parseInt(item.points), 0);
             document.getElementById('kpi-puntos').textContent = totalPuntos.toLocaleString();
             document.getElementById('kpi-lider').textContent = datos.length > 0 ? datos[0].name : "---";
 
-            // 3. Gráfica Puntos
+            // Gráficas
             const maxPoints = Math.max(...datos.map(d => d.points)) || 100;
             const chartPoints = document.getElementById('chart-points');
             chartPoints.innerHTML = ""; 
             
-            datos.forEach(d => {
+            // Limitamos la gráfica a los TOP 10 para que no se vea gigante si hay 1000 empleados
+            datos.slice(0, 10).forEach(d => {
                 const percent = (d.points / maxPoints) * 100;
                 chartPoints.innerHTML += `
                     <div class="bar-container">
@@ -231,12 +231,12 @@
                 `;
             });
 
-            // 4. Gráfica Ideas
+            // Gráfica Ideas (Top 10)
             const maxIdeas = Math.max(...datos.map(d => d.ideas)) || 10;
             const chartIdeas = document.getElementById('chart-ideas');
             chartIdeas.innerHTML = ""; 
             
-            datos.forEach(d => {
+            datos.slice(0, 10).forEach(d => {
                 const percent = (d.ideas / maxIdeas) * 100;
                 chartIdeas.innerHTML += `
                     <div class="bar-container">
@@ -250,59 +250,63 @@
                 `;
             });
 
-            // 5. Tabla con Botón Eliminar
+            // Tabla Completa (Aquí sí salen todos)
             const tbody = document.getElementById('table-body');
             tbody.innerHTML = "";
             
             datos.forEach((d, index) => {
                 tbody.innerHTML += `
                     <tr>
+                        <td><span class="id-cell">${d.id}</span></td>
                         <td style="font-weight: 600;">${d.name}</td>
                         <td><span class="badge">${d.depto}</span></td>
                         <td style="color: var(--primary); font-weight: 800;">${d.points}</td>
                         <td>${d.talleres}</td>
                         <td>${d.ideas}</td>
                         <td style="text-align: center;">
-                            <button class="btn-delete" onclick="eliminarGestor(${index})">🗑️ Eliminar</button>
+                            <button class="btn-delete" onclick="eliminarGestor(${index})">🗑️</button>
                         </td>
                     </tr>
                 `;
             });
         }
 
-        // Agregar Nuevo Gestor
         function guardarDatoLocal(e) {
             e.preventDefault();
             const nuevoGestor = {
+                id: document.getElementById('input-id').value,
                 name: document.getElementById('input-nombre').value,
                 depto: document.getElementById('input-depto').value,
                 points: parseInt(document.getElementById('input-puntos').value) || 0,
                 talleres: 0,
                 ideas: parseInt(document.getElementById('input-ideas').value) || 0
             };
+            
+            // Validar que el ID no exista ya (opcional pero profesional)
+            const existe = datos.find(d => d.id === nuevoGestor.id);
+            if(existe) {
+                alert("¡Error! Ese número de empleado ya existe en el sistema.");
+                return;
+            }
+
             datos.push(nuevoGestor);
             renderizar();
             cerrarModal();
             document.getElementById('form-gestor').reset();
         }
 
-        // Eliminar Gestor
         function eliminarGestor(index) {
             const nombre = datos[index].name;
-            const confirmacion = confirm(`¿Estás seguro de eliminar a ${nombre}?`);
-            if (confirmacion) {
-                datos.splice(index, 1); // Borra el elemento de la lista
-                renderizar(); // Vuelve a pintar la pantalla
+            if (confirm(`¿Eliminar gestor ${nombre} del sistema?`)) {
+                datos.splice(index, 1);
+                renderizar();
             }
         }
 
-        // Modal
         function abrirModal() { document.getElementById('modal').style.display = 'flex'; }
         function cerrarModal() { document.getElementById('modal').style.display = 'none'; }
 
-        // Iniciar
         renderizar();
-
     </script>
 </body>
 </html>
