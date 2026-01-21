@@ -3,136 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestión</title>
+    <title>Sistema de Gestión de Innovación</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" crossorigin></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" crossorigin></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.21.2/babel.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.5.0/Recharts.min.js"></script>
 
     <style>
-        /* Consola de depuración en pantalla (para que veas qué pasa) */
-        #debug-console {
-            background: #1e1e1e;
-            color: #00ff00;
-            font-family: monospace;
-            padding: 20px;
-            margin: 20px;
-            border-radius: 8px;
-            font-size: 14px;
-            border: 2px solid #333;
-            max-height: 300px;
-            overflow-y: auto;
+        @media print {
+            body { background-color: white !important; }
+            .no-imprimir { display: none !important; }
+            .shadow-sm { box-shadow: none !important; border: 1px solid #ddd; }
+            /* Ajuste para que las gráficas salgan en papel */
+            .recharts-wrapper { margin: 0 auto; }
         }
-        .log-line { margin-bottom: 5px; border-bottom: 1px solid #333; padding-bottom: 2px; }
-        .error-line { color: #ff4444; font-weight: bold; }
-        .success-line { color: #44ff44; }
+        #loading-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #f8fafc; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 50;
+        }
     </style>
-
-    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-    <script src="https://unpkg.com/recharts/umd/Recharts.js"></script>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-50 text-slate-800">
 
-    <div id="debug-console">
-        <div class="log-line">1. Iniciando sistema...</div>
+    <div id="loading-screen">
+        <div class="text-blue-600 text-4xl mb-4 font-bold">Iniciando...</div>
+        <p class="text-slate-500">Conectando librerías...</p>
     </div>
 
     <div id="root"></div>
 
-    <script>
-        function log(msg, type = 'normal') {
-            const consoleDiv = document.getElementById('debug-console');
-            const line = document.createElement('div');
-            line.className = 'log-line ' + (type === 'error' ? 'error-line' : 'success-line');
-            line.textContent = '> ' + msg;
-            consoleDiv.appendChild(line);
-        }
-
-        window.onerror = function(msg, url, line) {
-            log(`ERROR CRÍTICO: ${msg} (Línea: ${line})`, 'error');
-            return false;
-        };
-    </script>
-
     <script type="text/babel">
-        try {
-            log("2. React cargado correctamente.");
+        // --- 2. ESPERAMOS A QUE LA VENTANA CARGUE TODO ---
+        window.addEventListener('load', () => {
             
-            // Verificamos Recharts
-            if (!window.Recharts) {
-                throw new Error("La librería de gráficas (Recharts) no cargó.");
-            }
-            log("3. Gráficas cargadas correctamente.");
+            // Ocultamos la pantalla de carga manual
+            const loader = document.getElementById('loading-screen');
+            if(loader) loader.style.display = 'none';
 
-            // --- CONFIGURACIÓN ---
+            // Verificación final de seguridad
+            if (!window.Recharts) {
+                document.body.innerHTML = '<div style="padding:20px; color:red; text-align:center;"><h1>Error de Red</h1><p>No se pudieron descargar las gráficas. Revisa tu conexión a internet y recarga.</p></div>';
+                return;
+            }
+
+            // --- INICIO DEL CÓDIGO REAL ---
+            
+            // PEGA TU URL DE GOOGLE SCRIPT AQUÍ
             const URL_API = "AQUI_TU_URL_DE_GOOGLE_SCRIPT"; 
-            
+
             const { useState, useEffect } = React;
-            // Usamos nombres seguros para las graficas
-            const RC = window.Recharts;
-            
-            // --- COMPONENTE APP ---
+            // Extraemos las herramientas de Recharts con cuidado
+            const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } = window.Recharts;
+
+            // Iconos simples
+            const IconPrinter = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>;
+            const IconUsers = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>;
+
             const App = () => {
-                const [status, setStatus] = useState("Iniciando...");
                 const [gestores, setGestores] = useState([]);
+                const [loading, setLoading] = useState(true);
 
                 useEffect(() => {
-                    log("4. Componente montado. Intentando conectar a datos...");
-                    
+                    // Si no hay URL configurada, ponemos datos falsos para que NO se vea blanco
                     if (URL_API === "AQUI_TU_URL_DE_GOOGLE_SCRIPT" || URL_API === "") {
-                        log("5. Usando datos de prueba (No hay URL).");
-                        setGestores([
-                            { name: "Ana Demo", depto: "TI", points: 100 },
-                            { name: "Juan Demo", depto: "Ventas", points: 80 }
-                        ]);
+                        setTimeout(() => {
+                            setGestores([
+                                { name: "Ejemplo Ana", depto: "TI", points: 1500, talleres: 3, ideas: 5 },
+                                { name: "Ejemplo Luis", depto: "RRHH", points: 800, talleres: 2, ideas: 1 }
+                            ]);
+                            setLoading(false);
+                        }, 500);
                     } else {
-                        log("5. Conectando a Google Sheets...");
+                        // Conexión real
                         fetch(URL_API)
-                            .then(r => r.json())
-                            .then(d => {
-                                log("6. ¡Datos recibidos de Google!");
-                                setGestores(d);
+                            .then(res => res.json())
+                            .then(data => {
+                                const ranking = Array.isArray(data) ? data.sort((a, b) => b.points - a.points) : [];
+                                setGestores(ranking);
+                                setLoading(false);
                             })
-                            .catch(e => {
-                                log("ERROR DE CONEXIÓN: " + e.message, 'error');
+                            .catch(err => {
+                                console.error(err);
+                                alert("No se pudo conectar a la base de datos.");
+                                setLoading(false);
                             });
                     }
                 }, []);
 
+                if (loading) return <div className="p-10 text-center font-bold text-blue-600">Cargando datos...</div>;
+
                 return (
-                    <div className="p-8 max-w-4xl mx-auto">
-                        <div className="bg-white p-6 rounded-lg shadow-lg">
-                            <h1 className="text-2xl font-bold mb-4 text-blue-600">Sistema Funcionando</h1>
-                            <p className="mb-4 text-gray-600">Si ves esto, React está vivo.</p>
-                            
-                            <div className="h-64 border p-4 rounded">
-                                <RC.ResponsiveContainer width="100%" height="100%">
-                                    <RC.BarChart data={gestores}>
-                                        <RC.CartesianGrid strokeDasharray="3 3" />
-                                        <RC.XAxis dataKey="name" />
-                                        <RC.YAxis />
-                                        <RC.Tooltip />
-                                        <RC.Bar dataKey="points" fill="#2563eb" />
-                                    </RC.BarChart>
-                                </RC.ResponsiveContainer>
+                    <div className="min-h-screen pb-10 max-w-7xl mx-auto px-4 pt-8 font-sans">
+                        
+                        {/* ENCABEZADO */}
+                        <div className="flex flex-col md:flex-row justify-between items-center mb-8 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                            <div className="mb-4 md:mb-0">
+                                <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Gestión de Innovación</h1>
+                                <p className="text-slate-500 font-medium">Panel de Control de Puntos (PI)</p>
+                            </div>
+                            <button onClick={() => window.print()} className="no-imprimir flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 transition font-bold shadow-md hover:shadow-lg">
+                                <IconPrinter /> Imprimir Reporte
+                            </button>
+                        </div>
+
+                        {/* TARJETAS KPI */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex items-center gap-4 hover:shadow-md transition">
+                                <div className="p-4 bg-blue-50 rounded-full text-blue-600"><IconUsers /></div>
+                                <div>
+                                    <p className="text-slate-500 text-sm font-bold uppercase tracking-wider">Gestores</p>
+                                    <h3 className="text-3xl font-black text-slate-800">{gestores.length}</h3>
+                                </div>
+                            </div>
+                            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition">
+                                 <p className="text-slate-500 text-sm font-bold uppercase tracking-wider">Puntos Globales</p>
+                                 <h3 className="text-3xl font-black text-emerald-600">
+                                    {gestores.reduce((acc, curr) => acc + (parseInt(curr.points) || 0), 0)} PI
+                                 </h3>
+                            </div>
+                            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition">
+                                 <p className="text-slate-500 text-sm font-bold uppercase tracking-wider">Líder Actual</p>
+                                 <h3 className="text-2xl font-black text-purple-600 truncate">
+                                    {gestores.length > 0 ? gestores[0].name : "-"}
+                                 </h3>
+                            </div>
+                        </div>
+
+                        {/* GRÁFICAS */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200" style={{ height: '450px' }}>
+                                <h2 className="text-xl font-bold mb-6 text-slate-800">Ranking de Puntos</h2>
+                                <div style={{ height: 350, width: '100%' }}>
+                                    <ResponsiveContainer>
+                                        <BarChart data={gestores}>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                                            <XAxis dataKey="name" tick={{fontSize: 12, fill: '#64748b'}} interval={0} axisLine={false} tickLine={false} />
+                                            <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b'}} />
+                                            <Tooltip cursor={{fill: '#f8fafc'}} contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'}} />
+                                            <Bar dataKey="points" fill="#3b82f6" name="Puntos PI" radius={[4, 4, 0, 0]} barSize={50} />
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </div>
                             </div>
 
-                            <table className="w-full mt-8 border-collapse">
-                                <thead>
-                                    <tr className="bg-gray-100">
-                                        <th className="p-2 text-left">Nombre</th>
-                                        <th className="p-2 text-left">Puntos</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {gestores.map((g, i) => (
-                                        <tr key={i} className="border-b">
-                                            <td className="p-2">{g.name}</td>
-                                            <td className="p-2 font-bold">{g.points}</td>
+                            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200" style={{ height: '450px' }}>
+                                <h2 className="text-xl font-bold mb-6 text-slate-800">Desglose de Actividad</h2>
+                                <div style={{ height: 350, width: '100%' }}>
+                                    <ResponsiveContainer>
+                                        <BarChart data={gestores} layout="vertical">
+                                            <CartesianGrid strokeDasharray="3 3" horizontal={true} stroke="#e2e8f0" />
+                                            <XAxis type="number" hide />
+                                            <YAxis dataKey="name" type="category" width={100} tick={{fontSize: 11, fill: '#64748b'}} axisLine={false} tickLine={false} />
+                                            <Tooltip cursor={{fill: 'transparent'}} contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'}} />
+                                            <Legend wrapperStyle={{paddingTop: '20px'}} />
+                                            <Bar dataKey="talleres" stackId="a" fill="#10b981" name="Talleres" radius={[0, 0, 0, 0]} barSize={20} />
+                                            <Bar dataKey="ideas" stackId="a" fill="#8b5cf6" name="Ideas" radius={[0, 4, 4, 0]} barSize={20} />
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* TABLA DETALLADA */}
+                        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                            <div className="px-6 py-4 bg-slate-50 border-b border-slate-200">
+                                <h3 className="font-bold text-slate-800">Detalle Completo de Gestores</h3>
+                            </div>
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-left text-sm text-slate-600">
+                                    <thead className="bg-white text-slate-500 uppercase font-bold text-xs border-b border-slate-100">
+                                        <tr>
+                                            <th className="px-6 py-4">Nombre</th>
+                                            <th className="px-6 py-4">Departamento</th>
+                                            <th className="px-6 py-4">Puntos Totales</th>
+                                            <th className="px-6 py-4 text-center">Talleres</th>
+                                            <th className="px-6 py-4 text-center">Ideas</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-100">
+                                        {gestores.map((g, i) => (
+                                            <tr key={i} className="hover:bg-slate-50 transition-colors">
+                                                <td className="px-6 py-4 font-bold text-slate-900">{g.name}</td>
+                                                <td className="px-6 py-4">{g.depto}</td>
+                                                <td className="px-6 py-4 text-blue-600 font-extrabold">{g.points} PI</td>
+                                                <td className="px-6 py-4 text-center">{g.talleres}</td>
+                                                <td className="px-6 py-4 text-center">{g.ideas}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div className="text-center mt-10 mb-4 text-slate-400 text-xs no-imprimir">
+                            Sistema de Puntos v2.0 • Renderizado con React & Recharts
                         </div>
                     </div>
                 );
@@ -140,11 +210,7 @@
 
             const root = ReactDOM.createRoot(document.getElementById('root'));
             root.render(<App />);
-            log("INTENTO DE RENDERIZADO COMPLETADO");
-
-        } catch (err) {
-            log("ERROR EN EL CÓDIGO: " + err.message, 'error');
-        }
+        });
     </script>
 </body>
 </html>
