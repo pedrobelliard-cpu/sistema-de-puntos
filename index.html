@@ -8,7 +8,7 @@
     <style>
         /* --- ESTILOS VISUALES (INTACTOS) --- */
         :root {
-            --primary: #2563eb;       
+            --primary: #2563eb;
             --secondary: #1e293b;     
             --accent: #10b981;        
             --bg: #f1f5f9;            
@@ -17,104 +17,195 @@
             --edit: #f59e0b;
         }
 
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); color: var(--secondary); margin: 0; padding: 20px; display: flex; flex-direction: column; min-height: 100vh; }
-        .container { max-width: 1280px; margin: 0 auto; width: 100%; flex: 1; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); color: var(--secondary);
+            margin: 0; padding: 20px; display: flex; flex-direction: column; min-height: 100vh;
+        }
+        .container { max-width: 1280px; margin: 0 auto; width: 100%; flex: 1;
+        }
 
         /* HEADER */
-        .header { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 20px 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 30px; border-left: 5px solid var(--primary); }
-        .header h1 { margin: 0; font-size: 22px; color: var(--secondary); text-transform: uppercase; letter-spacing: 0.5px; }
-        .header p { margin: 5px 0 0; color: var(--primary); font-size: 15px; font-weight: 700; }
+        .header { display: flex;
+            justify-content: space-between; align-items: center; background: var(--card); padding: 20px 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 30px;
+            border-left: 5px solid var(--primary); }
+        .header h1 { margin: 0; font-size: 22px;
+            color: var(--secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+        .header p { margin: 5px 0 0;
+            color: var(--primary); font-size: 15px; font-weight: 700; }
         
-        .actions { display: flex; gap: 10px; }
+        .actions { display: flex;
+            gap: 10px; }
 
-        .btn-main { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
-        .btn-main:hover { background: #1d4ed8; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); }
+        .btn-main { background: var(--primary); color: white; border: none;
+            padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px;
+        }
+        .btn-main:hover { background: #1d4ed8; transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); }
 
-        .btn-print { background: var(--secondary); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-        .btn-print:hover { background: #334155; }
+        .btn-print { background: var(--secondary);
+            color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;
+        }
+        .btn-print:hover { background: #334155;
+        }
 
-        .btn-config { background: #cbd5e1; color: #334155; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-        .btn-config:hover { background: #94a3b8; color: white; }
+        .btn-config { background: #cbd5e1; color: #334155; border: none; padding: 12px; border-radius: 8px;
+            font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;
+        }
+        .btn-config:hover { background: #94a3b8; color: white;
+        }
 
         /* KPI CARDS */
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .card { background: var(--card); padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .kpi-title { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; font-weight: 700; }
-        .kpi-number { font-size: 36px; font-weight: 800; margin-top: 10px; color: var(--secondary); }
+        .kpi-grid { display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .card { background: var(--card);
+            padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .kpi-title { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; font-weight: 700;
+        }
+        .kpi-number { font-size: 36px; font-weight: 800; margin-top: 10px; color: var(--secondary);
+        }
         
         /* GRÁFICAS */
-        .charts-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 25px; margin-bottom: 30px; }
-        .chart-box { background: var(--card); padding: 25px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .chart-header { font-weight: bold; margin-bottom: 20px; font-size: 18px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; }
+        .charts-section { display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 25px; margin-bottom: 30px; }
+        .chart-box { background: var(--card);
+            padding: 25px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .chart-header { font-weight: bold;
+            margin-bottom: 20px; font-size: 18px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;
+        }
         
-        .bar-container { display: flex; align-items: center; margin-bottom: 15px; font-size: 14px; }
-        .bar-name { width: 140px; text-align: right; padding-right: 15px; font-weight: 500; color: #475569; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .bar-bg { flex: 1; background: #f1f5f9; height: 28px; border-radius: 6px; overflow: hidden; position: relative; }
-        .bar-fill { height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; color: white; font-weight: bold; font-size: 12px; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .bar-container { display: flex;
+            align-items: center; margin-bottom: 15px; font-size: 14px; }
+        .bar-name { width: 140px; text-align: right;
+            padding-right: 15px; font-weight: 500; color: #475569; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .bar-bg { flex: 1; background: #f1f5f9; height: 28px; border-radius: 6px; overflow: hidden;
+            position: relative; }
+        .bar-fill { height: 100%; display: flex; align-items: center; justify-content: flex-end;
+            padding-right: 10px; color: white; font-weight: bold; font-size: 12px; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
         /* TABLA Y BUSCADOR */
-        .table-box { background: var(--card); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .table-box { background: var(--card);
+            border-radius: 12px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         
-        .table-header-row { display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; border-bottom: 1px solid #e2e8f0; }
-        .table-title { font-weight: bold; font-size: 18px; }
+        .table-header-row { display: flex;
+            justify-content: space-between; align-items: center; padding: 20px 25px; border-bottom: 1px solid #e2e8f0;
+        }
+        .table-title { font-weight: bold; font-size: 18px;
+        }
         
-        .search-container input { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; width: 250px; outline: none; transition: 0.2s; }
-        .search-container input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        .search-container input { padding: 8px 12px;
+            border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; width: 250px; outline: none; transition: 0.2s;
+        }
+        .search-container input:focus { border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
 
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { background: #f8fafc; padding: 18px 25px; font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; border-bottom: 1px solid #e2e8f0; }
-        td { padding: 18px 25px; border-bottom: 1px solid #f1f5f9; color: #334155; }
-        tr:last-child td { border-bottom: none; }
-        tr:hover { background-color: #f8fafc; }
-        .badge { background: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; display: inline-block; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle; }
-        .id-cell { font-family: monospace; font-weight: bold; color: #64748b; background: #f1f5f9; padding: 4px 8px; border-radius: 4px; font-size: 13px; border: 1px solid #e2e8f0; }
+        table { width: 100%;
+            border-collapse: collapse; text-align: left; }
+        th { background: #f8fafc; padding: 18px 25px;
+            font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; border-bottom: 1px solid #e2e8f0;
+        }
+        td { padding: 18px 25px; border-bottom: 1px solid #f1f5f9; color: #334155;
+        }
+        tr:last-child td { border-bottom: none;
+        }
+        tr:hover { background-color: #f8fafc;
+        }
+        .badge { background: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 20px;
+            font-size: 11px; font-weight: bold; display: inline-block; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle;
+        }
+        .id-cell { font-family: monospace; font-weight: bold; color: #64748b; background: #f1f5f9;
+            padding: 4px 8px; border-radius: 4px; font-size: 13px; border: 1px solid #e2e8f0;
+        }
         
         /* BOTONES ACCIÓN */
-        .btn-group-action { display: flex; gap: 8px; justify-content: center; }
-        .btn-icon { border: 1px solid #e2e8f0; background: white; padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: 0.2s; font-size: 14px; }
+        .btn-group-action { display: flex;
+            gap: 8px; justify-content: center; }
+        .btn-icon { border: 1px solid #e2e8f0; background: white;
+            padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: 0.2s; font-size: 14px;
+        }
         
-        .btn-edit { color: var(--primary); border-color: #bfdbfe; }
-        .btn-edit:hover { background: var(--primary); color: white; }
+        .btn-edit { color: var(--primary);
+            border-color: #bfdbfe; }
+        .btn-edit:hover { background: var(--primary); color: white;
+        }
 
-        .btn-delete { color: var(--danger); border-color: #fecaca; }
-        .btn-delete:hover { background: var(--danger); color: white; }
+        .btn-delete { color: var(--danger); border-color: #fecaca;
+        }
+        .btn-delete:hover { background: var(--danger); color: white;
+        }
 
         /* FOOTER */
-        .footer { margin-top: 40px; text-align: center; color: #94a3b8; font-size: 12px; padding: 20px; border-top: 1px solid #e2e8f0; }
+        .footer { margin-top: 40px;
+            text-align: center; color: #94a3b8; font-size: 12px; padding: 20px; border-top: 1px solid #e2e8f0;
+        }
 
         /* MODAL */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 100; justify-content: center; align-items: center; }
-        .modal-content { background: white; width: 90%; max-width: 650px; padding: 30px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); animation: slideIn 0.3s ease; max-height: 90vh; overflow-y: auto; }
+        .modal-overlay { display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 100;
+            justify-content: center; align-items: center; }
+        .modal-content { background: white; width: 90%; max-width: 650px;
+            padding: 30px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); animation: slideIn 0.3s ease; max-height: 90vh;
+            overflow-y: auto; }
         
-        @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes slideIn { from { transform: translateY(20px);
+            opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .form-full { grid-column: span 2; }
+        .form-grid { display: grid;
+            grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-full { grid-column: span 2;
+        }
 
-        .form-label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: #475569; }
-        .form-input { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 5px; font-size: 14px; outline: none; transition: border 0.2s; box-sizing: border-box; }
-        .form-input:focus { border-color: var(--primary); }
-        .hint { font-size: 12px; color: #94a3b8; margin-bottom: 10px; display: block; }
+        .form-label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: #475569;
+        }
+        .form-input { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px;
+            margin-bottom: 5px; font-size: 14px; outline: none; transition: border 0.2s; box-sizing: border-box;
+        }
+        .form-input:focus { border-color: var(--primary);
+        }
+        .hint { font-size: 12px; color: #94a3b8; margin-bottom: 10px; display: block;
+        }
 
-        .checkbox-wrapper { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; }
-        .checkbox-wrapper:hover { background: #f8fafc; }
+        .checkbox-wrapper { display: flex; align-items: center; gap: 10px; padding: 10px;
+            border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; }
+        .checkbox-wrapper:hover { background: #f8fafc;
+        }
         
-        .btn-group { display: flex; gap: 10px; margin-top: 20px; grid-column: span 2; }
-        .btn-save { flex: 2; background: var(--secondary); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .btn-cancel { flex: 1; background: transparent; color: #64748b; border: 2px solid #e2e8f0; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .btn-save:hover { background: #0f172a; }
+        .btn-group { display: flex;
+            gap: 10px; margin-top: 20px; grid-column: span 2; }
+        .btn-save { flex: 2;
+            background: var(--secondary); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;
+        }
+        .btn-cancel { flex: 1; background: transparent; color: #64748b; border: 2px solid #e2e8f0;
+            padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-save:hover { background: #0f172a;
+        }
 
-        .total-preview { grid-column: span 2; background: #eff6ff; padding: 15px; text-align: center; border-radius: 8px; color: var(--primary); font-weight: 800; font-size: 18px; border: 1px solid #bfdbfe; margin-top: 10px; }
+        .total-preview { grid-column: span 2; background: #eff6ff; padding: 15px; text-align: center;
+            border-radius: 8px; color: var(--primary); font-weight: 800; font-size: 18px; border: 1px solid #bfdbfe; margin-top: 10px;
+        }
 
-        #div-otro-depto { animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        #div-otro-depto { animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1;
+        } }
+        
+        /* ESTILO EXTRA PARA CONFIG */
+        .config-row { display: flex; gap: 10px; align-items: flex-end; margin-bottom: 15px; }
+        .config-col-name { flex: 2; }
+        .config-col-points { flex: 1; }
 
         @media print {
-            .actions, .btn-group-action, th:last-child, td:last-child, .search-container { display: none !important; }
-            body { background: white; padding: 0; }
-            .container { max-width: 100%; }
-            .card, .chart-box, .table-box { box-shadow: none; border: 1px solid #ccc; }
-            .footer { display: none; }
+            .actions, .btn-group-action, th:last-child, td:last-child, .search-container { display: none !important;
+            }
+            body { background: white; padding: 0;
+            }
+            .container { max-width: 100%;
+            }
+            .card, .chart-box, .table-box { box-shadow: none;
+            border: 1px solid #ccc; }
+            .footer { display: none;
+            }
         }
 
     </style>
@@ -180,10 +271,10 @@
                         <th>ID</th>
                         <th>Nombre</th>
                         <th>Depto</th>
-                        <th title="Completó Formación">Form.</th>
-                        <th title="Talleres Asistidos">Tall.</th>
-                        <th title="Ideas Propias">Ideas</th>
-                        <th title="Actividad Anual">Evento</th>
+                        <th id="th-formacion" title="Completó Formación">Form.</th>
+                        <th id="th-taller" title="Talleres Asistidos">Tall.</th>
+                        <th id="th-ideas" title="Ideas Propias">Ideas</th>
+                        <th id="th-evento" title="Actividad Anual">Evento</th>
                         <th>Total PI</th>
                         <th style="text-align: center;">Acciones</th>
                     </tr>
@@ -193,7 +284,7 @@
         </div>
 
         <div class="footer">
-            Sistema Lanza tu Idea v0.1 © 2024 • Departamento de Investigación Aplicada a la Innovación • Uso Interno Confidencial
+            Sistema de Puntos 2006
         </div>
 
     </div>
@@ -291,19 +382,19 @@
                     </div>
 
                     <div>
-                        <label class="form-label">Talleres Asistidos</label>
+                        <label class="form-label" id="lbl-taller">Talleres Asistidos</label>
                         <input type="number" id="input-talleres" class="form-input" placeholder="0" min="0" max="3">
                         <span class="hint" id="hint-taller">* 200 PI c/u (Máx 3)</span>
                     </div>
 
                     <div>
-                        <label class="form-label">Acompañamiento Ideadores</label>
+                        <label class="form-label" id="lbl-mentoria">Acompañamiento Ideadores</label>
                         <input type="number" id="input-mentoria" class="form-input" placeholder="0" min="0" max="5">
                         <span class="hint" id="hint-mentoria">* 150 PI c/u (Máx 5)</span>
                     </div>
 
                     <div>
-                        <label class="form-label">Ideas Propias Implementadas</label>
+                        <label class="form-label" id="lbl-ideas">Ideas Propias Implementadas</label>
                         <input type="number" id="input-ideas" class="form-input" placeholder="0" min="0">
                         <span class="hint" id="hint-ideas">* 400 PI por idea</span>
                     </div>
@@ -335,25 +426,66 @@
     </div>
 
     <div class="modal-overlay" id="modal-config">
-        <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-content" style="max-width: 500px;">
             <h2 style="margin-top: 0; color: var(--secondary);">⚙️ Configuración de Normativa</h2>
-            <p style="font-size: 13px; color: #64748b; margin-bottom: 20px;">Ajuste los valores de puntos asignados por actividad.</p>
+            <p style="font-size: 13px; color: #64748b; margin-bottom: 20px;">Edite el Nombre de la actividad y sus Puntos correspondientes.</p>
             
             <form onsubmit="guardarConfig(event)">
-                <label class="form-label">Programa de Formación</label>
-                <input type="number" id="conf-formacion" class="form-input" required>
                 
-                <label class="form-label">Por Taller Asistido</label>
-                <input type="number" id="conf-taller" class="form-input" required>
+                <div class="config-row">
+                    <div class="config-col-name">
+                        <label class="form-label">Nombre Normativa 1</label>
+                        <input type="text" id="conf-name-formacion" class="form-input" required placeholder="Ej: Programa de Formación">
+                    </div>
+                    <div class="config-col-points">
+                        <label class="form-label">Puntos</label>
+                        <input type="number" id="conf-val-formacion" class="form-input" required>
+                    </div>
+                </div>
+
+                <div class="config-row">
+                    <div class="config-col-name">
+                        <label class="form-label">Nombre Normativa 2</label>
+                        <input type="text" id="conf-name-taller" class="form-input" required>
+                    </div>
+                    <div class="config-col-points">
+                        <label class="form-label">Puntos</label>
+                        <input type="number" id="conf-val-taller" class="form-input" required>
+                    </div>
+                </div>
                 
-                <label class="form-label">Por Acompañamiento</label>
-                <input type="number" id="conf-mentoria" class="form-input" required>
+                <div class="config-row">
+                    <div class="config-col-name">
+                        <label class="form-label">Nombre Normativa 3</label>
+                        <input type="text" id="conf-name-mentoria" class="form-input" required>
+                    </div>
+                    <div class="config-col-points">
+                        <label class="form-label">Puntos</label>
+                        <input type="number" id="conf-val-mentoria" class="form-input" required>
+                    </div>
+                </div>
                 
-                <label class="form-label">Por Idea Propia</label>
-                <input type="number" id="conf-ideas" class="form-input" required>
+                <div class="config-row">
+                    <div class="config-col-name">
+                        <label class="form-label">Nombre Normativa 4</label>
+                        <input type="text" id="conf-name-ideas" class="form-input" required>
+                    </div>
+                    <div class="config-col-points">
+                        <label class="form-label">Puntos</label>
+                        <input type="number" id="conf-val-ideas" class="form-input" required>
+                    </div>
+                </div>
                 
-                <label class="form-label">Por Evento Anual</label>
-                <input type="number" id="conf-evento" class="form-input" required>
+                <div class="config-row">
+                    <div class="config-col-name">
+                        <label class="form-label">Nombre Normativa 5</label>
+                        <input type="text" id="conf-name-evento" class="form-input" required>
+                    </div>
+                    <div class="config-col-points">
+                        <label class="form-label">Puntos</label>
+                        <input type="number" id="conf-val-evento" class="form-input" required>
+                    </div>
+                </div>
 
                 <div class="btn-group">
                     <button type="button" class="btn-cancel" onclick="cerrarConfig()">Cancelar</button>
@@ -364,13 +496,14 @@
     </div>
 
     <script>
-        // --- CONFIGURACIÓN GLOBAL DE PUNTOS (NUEVO) ---
-        let configPuntos = {
-            formacion: 400,
-            taller: 200,
-            mentoria: 150,
-            ideas: 400,
-            evento: 500
+        // --- CONFIGURACIÓN GLOBAL DE NOMBRES Y PUNTOS (MODIFICADO) ---
+        // Ahora guardamos objetos con 'nombre' y 'valor'
+        let configNormativa = {
+            formacion: { nombre: "Programa de Formación", valor: 400 },
+            taller: { nombre: "Por Taller Asistido", valor: 200 },
+            mentoria: { nombre: "Por Acompañamiento", valor: 150 },
+            ideas: { nombre: "Por Idea Propia", valor: 400 },
+            evento: { nombre: "Por Evento Anual", valor: 500 }
         };
 
         // --- DATOS INICIALES ---
@@ -382,21 +515,24 @@
             { id: "5088", name: "Ramon Sanchez", depto: "Dirección de Administración y Finanzas", formacion: true, talleres: 1, mentoria: 0, ideas: 0, evento: false, premio: 0, points: 0 }
         ];
 
-        let indiceEdicion = -1; 
+        let indiceEdicion = -1;
 
-        // --- CÁLCULO DINÁMICO ---
+        // --- CÁLCULO DINÁMICO (MODIFICADO para usar nueva estructura) ---
         function calcularPuntos(d) {
             let total = 0;
-            if (d.formacion) total += configPuntos.formacion;          
-            total += (d.talleres || 0) * configPuntos.taller;       
-            total += (d.mentoria || 0) * configPuntos.mentoria;       
-            total += (d.ideas || 0) * configPuntos.ideas;          
-            if (d.evento) total += configPuntos.evento;             
+            if (d.formacion) total += configNormativa.formacion.valor;          
+            total += (d.talleres || 0) * configNormativa.taller.valor;       
+            total += (d.mentoria || 0) * configNormativa.mentoria.valor;
+            total += (d.ideas || 0) * configNormativa.ideas.valor;          
+            if (d.evento) total += configNormativa.evento.valor;             
             total += (d.premio || 0);               
             return total;
         }
 
         function renderizar() {
+            // Actualizar etiquetas visuales de la interfaz
+            actualizarTextosInterfaz();
+
             // Filtrado por buscador
             const termino = document.getElementById('input-search') ? document.getElementById('input-search').value.toLowerCase() : "";
             
@@ -419,7 +555,6 @@
             const chartPoints = document.getElementById('chart-points');
             chartPoints.innerHTML = "";
             const maxPoints = Math.max(...datos.map(d => d.points)) || 100;
-            
             datos.slice(0, 10).forEach(d => {
                 const percent = (d.points / maxPoints) * 100;
                 chartPoints.innerHTML += `
@@ -437,7 +572,6 @@
             const chartIdeas = document.getElementById('chart-ideas');
             chartIdeas.innerHTML = "";
             const maxIdeas = Math.max(...datos.map(d => d.ideas)) || 5;
-
             datos.slice(0, 10).forEach(d => {
                 const percent = (d.ideas / maxIdeas) * 100;
                 if(d.ideas >= 0) {
@@ -457,7 +591,6 @@
             // Tabla
             const tbody = document.getElementById('table-body');
             tbody.innerHTML = "";
-            
             if (datosFiltrados.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 20px; color: #94a3b8;">No se encontraron resultados para "${termino}"</td></tr>`;
             } else {
@@ -486,13 +619,22 @@
             }
         }
 
-        // --- GESTIÓN DE CONFIGURACIÓN ---
+        // --- GESTIÓN DE CONFIGURACIÓN (ACTUALIZADO) ---
         function abrirConfig() {
-            document.getElementById('conf-formacion').value = configPuntos.formacion;
-            document.getElementById('conf-taller').value = configPuntos.taller;
-            document.getElementById('conf-mentoria').value = configPuntos.mentoria;
-            document.getElementById('conf-ideas').value = configPuntos.ideas;
-            document.getElementById('conf-evento').value = configPuntos.evento;
+            // Cargar NOMBRES
+            document.getElementById('conf-name-formacion').value = configNormativa.formacion.nombre;
+            document.getElementById('conf-name-taller').value = configNormativa.taller.nombre;
+            document.getElementById('conf-name-mentoria').value = configNormativa.mentoria.nombre;
+            document.getElementById('conf-name-ideas').value = configNormativa.ideas.nombre;
+            document.getElementById('conf-name-evento').value = configNormativa.evento.nombre;
+
+            // Cargar VALORES (PUNTOS)
+            document.getElementById('conf-val-formacion').value = configNormativa.formacion.valor;
+            document.getElementById('conf-val-taller').value = configNormativa.taller.valor;
+            document.getElementById('conf-val-mentoria').value = configNormativa.mentoria.valor;
+            document.getElementById('conf-val-ideas').value = configNormativa.ideas.valor;
+            document.getElementById('conf-val-evento').value = configNormativa.evento.valor;
+            
             document.getElementById('modal-config').style.display = 'flex';
         }
 
@@ -502,23 +644,48 @@
 
         function guardarConfig(e) {
             e.preventDefault();
-            configPuntos.formacion = parseInt(document.getElementById('conf-formacion').value) || 0;
-            configPuntos.taller = parseInt(document.getElementById('conf-taller').value) || 0;
-            configPuntos.mentoria = parseInt(document.getElementById('conf-mentoria').value) || 0;
-            configPuntos.ideas = parseInt(document.getElementById('conf-ideas').value) || 0;
-            configPuntos.evento = parseInt(document.getElementById('conf-evento').value) || 0;
             
-            actualizarHints(); // Actualizar textos de ayuda
+            // Guardar NOMBRES y PUNTOS
+            configNormativa.formacion.nombre = document.getElementById('conf-name-formacion').value;
+            configNormativa.formacion.valor = parseInt(document.getElementById('conf-val-formacion').value) || 0;
+
+            configNormativa.taller.nombre = document.getElementById('conf-name-taller').value;
+            configNormativa.taller.valor = parseInt(document.getElementById('conf-val-taller').value) || 0;
+
+            configNormativa.mentoria.nombre = document.getElementById('conf-name-mentoria').value;
+            configNormativa.mentoria.valor = parseInt(document.getElementById('conf-val-mentoria').value) || 0;
+
+            configNormativa.ideas.nombre = document.getElementById('conf-name-ideas').value;
+            configNormativa.ideas.valor = parseInt(document.getElementById('conf-val-ideas').value) || 0;
+
+            configNormativa.evento.nombre = document.getElementById('conf-name-evento').value;
+            configNormativa.evento.valor = parseInt(document.getElementById('conf-val-evento').value) || 0;
+            
+            actualizarTextosInterfaz(); // Refrescar los textos en formularios y tablas
             renderizar(); // Recalcular todo
             cerrarConfig();
         }
 
-        function actualizarHints() {
-            document.getElementById('hint-formacion').textContent = `Completó Programa de Formación Gestor (+${configPuntos.formacion} PI)`;
-            document.getElementById('hint-taller').textContent = `* ${configPuntos.taller} PI c/u (Máx 3)`;
-            document.getElementById('hint-mentoria').textContent = `* ${configPuntos.mentoria} PI c/u (Máx 5)`;
-            document.getElementById('hint-ideas').textContent = `* ${configPuntos.ideas} PI por idea`;
-            document.getElementById('hint-evento').textContent = `Participó en Actividad Anual (+${configPuntos.evento} PI)`;
+        // --- FUNCIÓN NUEVA: ACTUALIZA TEXTOS EN PANTALLA SEGÚN CONFIG ---
+        function actualizarTextosInterfaz() {
+            // 1. En el formulario de registro (Labels principales)
+            document.getElementById('lbl-taller').textContent = configNormativa.taller.nombre;
+            document.getElementById('lbl-mentoria').textContent = configNormativa.mentoria.nombre;
+            document.getElementById('lbl-ideas').textContent = configNormativa.ideas.nombre;
+
+            // 2. En el formulario de registro (Hints/Subtextos con puntos)
+            document.getElementById('hint-formacion').textContent = `${configNormativa.formacion.nombre} (+${configNormativa.formacion.valor} PI)`;
+            document.getElementById('hint-taller').textContent = `* ${configNormativa.taller.valor} PI c/u (Máx 3)`;
+            document.getElementById('hint-mentoria').textContent = `* ${configNormativa.mentoria.valor} PI c/u (Máx 5)`;
+            document.getElementById('hint-ideas').textContent = `* ${configNormativa.ideas.valor} PI por idea`;
+            document.getElementById('hint-evento').textContent = `${configNormativa.evento.nombre} (+${configNormativa.evento.valor} PI)`;
+
+            // 3. En la tabla principal (Encabezados de columna)
+            // Abreviamos un poco si es muy largo para que no rompa la tabla, o usamos el nombre completo en 'title'
+            document.getElementById('th-formacion').title = configNormativa.formacion.nombre;
+            document.getElementById('th-taller').title = configNormativa.taller.nombre;
+            document.getElementById('th-ideas').title = configNormativa.ideas.nombre;
+            document.getElementById('th-evento').title = configNormativa.evento.nombre;
         }
 
         // --- LÓGICA DEPARTAMENTOS ---
@@ -539,19 +706,19 @@
 
         // --- FORMULARIO ---
         function abrirModal() { 
-            indiceEdicion = -1; 
+            indiceEdicion = -1;
             document.getElementById('form-gestor').reset();
             verificarOtroDepto(); 
-            actualizarHints(); // Asegurar que los textos están al día
+            actualizarTextosInterfaz(); // Asegurar que los textos están al día
             document.getElementById('modal-title').textContent = "Registrar Nuevo Gestor";
             document.getElementById('btn-save-text').textContent = "Guardar Registro";
             document.getElementById('input-id').disabled = false; 
             document.getElementById('preview-total').textContent = "0";
-            document.getElementById('modal').style.display = 'flex'; 
+            document.getElementById('modal').style.display = 'flex';
         }
 
         function cargarEdicion(index) {
-            indiceEdicion = index; 
+            indiceEdicion = index;
             const gestor = datos[index];
 
             document.getElementById('input-id').value = gestor.id;
@@ -559,7 +726,6 @@
             
             const select = document.getElementById('input-depto');
             const opciones = Array.from(select.options).map(o => o.value);
-            
             if (opciones.includes(gestor.depto)) {
                 select.value = gestor.depto;
             } else {
@@ -575,7 +741,7 @@
             document.getElementById('check-evento').checked = gestor.evento;
             document.getElementById('input-premio').value = gestor.premio;
 
-            actualizarHints();
+            actualizarTextosInterfaz();
             document.getElementById('modal-title').textContent = "Modificar Datos";
             document.getElementById('btn-save-text').textContent = "Guardar Cambios";
             document.getElementById('input-id').disabled = true; 
@@ -645,12 +811,12 @@
         }
 
         function cerrarModal() { 
-            document.getElementById('modal').style.display = 'none'; 
+            document.getElementById('modal').style.display = 'none';
             indiceEdicion = -1;
         }
 
         // Inicializar textos de ayuda
-        actualizarHints();
+        actualizarTextosInterfaz();
         renderizar();
     </script>
 </body>
