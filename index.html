@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestión de puntos</title>
+    <title>Sistema de Gestión de Puntos 2026</title>
     <style>
         /* --- ESTILOS VISUALES (INTACTOS) --- */
         :root {
@@ -86,7 +86,7 @@
 
         /* TABLA Y BUSCADOR */
         .table-box { background: var(--card);
-            border-radius: 12px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+            border-radius: 12px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.02); overflow-x: auto; }
         
         .table-header-row { display: flex;
             justify-content: space-between; align-items: center; padding: 20px 25px; border-bottom: 1px solid #e2e8f0;
@@ -101,9 +101,9 @@
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
 
         table { width: 100%;
-            border-collapse: collapse; text-align: left; }
+            border-collapse: collapse; text-align: left; min-width: 800px; }
         th { background: #f8fafc; padding: 18px 25px;
-            font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; border-bottom: 1px solid #e2e8f0;
+            font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; border-bottom: 1px solid #e2e8f0; white-space: nowrap;
         }
         td { padding: 18px 25px; border-bottom: 1px solid #f1f5f9; color: #334155;
         }
@@ -190,10 +190,21 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1;
         } }
         
-        /* ESTILO EXTRA PARA CONFIG */
-        .config-row { display: flex; gap: 10px; align-items: flex-end; margin-bottom: 15px; }
+        /* ESTILO EXTRA PARA CONFIG EXPANDIBLE */
+        .config-scroll-area {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #f1f5f9;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .config-row { display: flex; gap: 10px; align-items: flex-end; margin-bottom: 15px; background: #f8fafc; padding: 10px; border-radius: 8px; position: relative;}
         .config-col-name { flex: 2; }
+        .config-col-type { flex: 1; }
         .config-col-points { flex: 1; }
+        .btn-delete-item { color: var(--danger); cursor: pointer; border: none; background: transparent; font-size: 16px; margin-bottom: 8px;}
 
         @media print {
             .actions, .btn-group-action, th:last-child, td:last-child, .search-container { display: none !important;
@@ -253,9 +264,8 @@
                 <div id="chart-points"></div>
             </div>
             <div class="chart-box">
-                <div class="chart-header">💡 Ideas Propias Implementadas</div>
-                <div id="chart-ideas"></div>
-            </div>
+                <div class="chart-header">💡 Distribución de Actividades</div>
+                <div id="chart-ideas"></div> </div>
         </div>
 
         <div class="table-box">
@@ -265,26 +275,17 @@
                     <input type="text" id="input-search" placeholder="🔍 Buscar por nombre o ID..." onkeyup="renderizar()">
                 </div>
             </div>
-            <table>
+            <table id="main-table">
                 <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Depto</th>
-                        <th id="th-formacion" title="Completó Formación">Form.</th>
-                        <th id="th-taller" title="Talleres Asistidos">Tall.</th>
-                        <th id="th-ideas" title="Ideas Propias">Ideas</th>
-                        <th id="th-evento" title="Actividad Anual">Evento</th>
-                        <th>Total PI</th>
-                        <th style="text-align: center;">Acciones</th>
-                    </tr>
+                    <tr id="table-head-row">
+                        </tr>
                 </thead>
                 <tbody id="table-body"></tbody>
             </table>
         </div>
 
         <div class="footer">
-            Sistema de Puntos 2006
+            Sistema de Puntos 2026
         </div>
 
     </div>
@@ -296,10 +297,10 @@
                 
                 <div class="form-grid">
                     <div>
-                        <label class="form-label">ID Empleado (4 dígitos)</label>
-                        <input type="text" id="input-id" class="form-input" placeholder="Ej: 1045" maxlength="4" pattern="\d{4}" title="Debe ser 4 dígitos" required>
+                        <label class="form-label">ID Empleado</label>
+                        <input type="text" id="input-id" class="form-input" placeholder="Ej: 1045" required>
                     </div>
-                    <div class="form-full">
+                    <div>
                         <label class="form-label">Nombre del Colaborador</label>
                         <input type="text" id="input-nombre" class="form-input" placeholder="Nombre completo" required>
                     </div>
@@ -371,46 +372,11 @@
                     </div>
 
                     <div class="form-full" style="border-top: 1px solid #e2e8f0; margin-top: 10px; padding-top: 10px;">
-                        <label class="form-label" style="color: var(--primary);">ASIGNACIÓN DE PUNTOS (Normativa Configurable)</label>
+                        <label class="form-label" style="color: var(--primary);">ASIGNACIÓN DE PUNTOS (Actividades Dinámicas)</label>
                     </div>
 
-                    <div class="form-full">
-                        <label class="checkbox-wrapper">
-                            <input type="checkbox" id="check-formacion">
-                            <span id="hint-formacion">Completó Programa de Formación Gestor (+400 PI)</span>
-                        </label>
-                    </div>
-
-                    <div>
-                        <label class="form-label" id="lbl-taller">Talleres Asistidos</label>
-                        <input type="number" id="input-talleres" class="form-input" placeholder="0" min="0" max="3">
-                        <span class="hint" id="hint-taller">* 200 PI c/u (Máx 3)</span>
-                    </div>
-
-                    <div>
-                        <label class="form-label" id="lbl-mentoria">Acompañamiento Ideadores</label>
-                        <input type="number" id="input-mentoria" class="form-input" placeholder="0" min="0" max="5">
-                        <span class="hint" id="hint-mentoria">* 150 PI c/u (Máx 5)</span>
-                    </div>
-
-                    <div>
-                        <label class="form-label" id="lbl-ideas">Ideas Propias Implementadas</label>
-                        <input type="number" id="input-ideas" class="form-input" placeholder="0" min="0">
-                        <span class="hint" id="hint-ideas">* 400 PI por idea</span>
-                    </div>
-
-                    <div>
-                        <label class="form-label">Puntos por Reconocimiento</label>
-                        <input type="number" id="input-premio" class="form-input" placeholder="0" min="0">
-                        <span class="hint">* Manual (1000 - 3000 PI)</span>
-                    </div>
-
-                     <div class="form-full">
-                        <label class="checkbox-wrapper">
-                            <input type="checkbox" id="check-evento">
-                            <span id="hint-evento">Participó en Actividad Anual (+500 PI)</span>
-                        </label>
-                    </div>
+                    <div id="dynamic-form-fields" class="form-full">
+                        </div>
 
                     <div class="total-preview">
                         Total Calculado: <span id="preview-total">0</span> PI
@@ -426,66 +392,19 @@
     </div>
 
     <div class="modal-overlay" id="modal-config">
-        <div class="modal-content" style="max-width: 500px;">
-            <h2 style="margin-top: 0; color: var(--secondary);">⚙️ Configuración de Normativa</h2>
-            <p style="font-size: 13px; color: #64748b; margin-bottom: 20px;">Edite el Nombre de la actividad y sus Puntos correspondientes.</p>
+        <div class="modal-content" style="max-width: 700px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h2 style="margin-top: 0; color: var(--secondary);">⚙️ Configuración de Normativa</h2>
+                <button type="button" class="btn-main" onclick="agregarActividadConfig()" style="font-size: 12px; padding: 8px 15px;">+ Agregar Actividad</button>
+            </div>
+            <p style="font-size: 13px; color: #64748b; margin-bottom: 20px;">
+                Gestione las actividades. Use la barra lateral para ver más si hay muchas.
+            </p>
             
             <form onsubmit="guardarConfig(event)">
                 
-                <div class="config-row">
-                    <div class="config-col-name">
-                        <label class="form-label">Nombre Normativa 1</label>
-                        <input type="text" id="conf-name-formacion" class="form-input" required placeholder="Ej: Programa de Formación">
+                <div class="config-scroll-area" id="config-items-container">
                     </div>
-                    <div class="config-col-points">
-                        <label class="form-label">Puntos</label>
-                        <input type="number" id="conf-val-formacion" class="form-input" required>
-                    </div>
-                </div>
-
-                <div class="config-row">
-                    <div class="config-col-name">
-                        <label class="form-label">Nombre Normativa 2</label>
-                        <input type="text" id="conf-name-taller" class="form-input" required>
-                    </div>
-                    <div class="config-col-points">
-                        <label class="form-label">Puntos</label>
-                        <input type="number" id="conf-val-taller" class="form-input" required>
-                    </div>
-                </div>
-                
-                <div class="config-row">
-                    <div class="config-col-name">
-                        <label class="form-label">Nombre Normativa 3</label>
-                        <input type="text" id="conf-name-mentoria" class="form-input" required>
-                    </div>
-                    <div class="config-col-points">
-                        <label class="form-label">Puntos</label>
-                        <input type="number" id="conf-val-mentoria" class="form-input" required>
-                    </div>
-                </div>
-                
-                <div class="config-row">
-                    <div class="config-col-name">
-                        <label class="form-label">Nombre Normativa 4</label>
-                        <input type="text" id="conf-name-ideas" class="form-input" required>
-                    </div>
-                    <div class="config-col-points">
-                        <label class="form-label">Puntos</label>
-                        <input type="number" id="conf-val-ideas" class="form-input" required>
-                    </div>
-                </div>
-                
-                <div class="config-row">
-                    <div class="config-col-name">
-                        <label class="form-label">Nombre Normativa 5</label>
-                        <input type="text" id="conf-name-evento" class="form-input" required>
-                    </div>
-                    <div class="config-col-points">
-                        <label class="form-label">Puntos</label>
-                        <input type="number" id="conf-val-evento" class="form-input" required>
-                    </div>
-                </div>
 
                 <div class="btn-group">
                     <button type="button" class="btn-cancel" onclick="cerrarConfig()">Cancelar</button>
@@ -496,48 +415,52 @@
     </div>
 
     <script>
-        // --- CONFIGURACIÓN GLOBAL DE NOMBRES Y PUNTOS (MODIFICADO) ---
-        // Ahora guardamos objetos con 'nombre' y 'valor'
-        let configNormativa = {
-            formacion: { nombre: "Programa de Formación", valor: 400 },
-            taller: { nombre: "Por Taller Asistido", valor: 200 },
-            mentoria: { nombre: "Por Acompañamiento", valor: 150 },
-            ideas: { nombre: "Por Idea Propia", valor: 400 },
-            evento: { nombre: "Por Evento Anual", valor: 500 }
-        };
+        // --- 1. CONFIGURACIÓN INICIAL (DINÁMICA) ---
+        // Ahora es un Array para permitir infinitas actividades
+        let configNormativa = [
+            { id: 'act_1', nombre: "Programa de Formación", tipo: 'check', valor: 400 },
+            { id: 'act_2', nombre: "Por Taller Asistido", tipo: 'number', valor: 200 },
+            { id: 'act_3', nombre: "Por Acompañamiento", tipo: 'number', valor: 150 },
+            { id: 'act_4', nombre: "Por Idea Propia", tipo: 'number', valor: 400 },
+            { id: 'act_5', nombre: "Por Evento Anual", tipo: 'check', valor: 500 }
+        ];
 
-        // --- DATOS INICIALES ---
+        // --- DATOS INICIALES (Adaptados al nuevo formato dinámico) ---
+        // 'valores' guardará { 'act_1': true, 'act_2': 3, etc. }
         let datos = [
-            { id: "1045", name: "Jorge Tonos", depto: "Dirección de TI y Comunicaciones", formacion: true, talleres: 3, mentoria: 2, ideas: 2, evento: true, premio: 0, points: 0 },
-            { id: "2033", name: "Iris Cesa", depto: "Dirección de Gestión Humana", formacion: true, talleres: 2, mentoria: 1, ideas: 1, evento: false, premio: 0, points: 0 },
-            { id: "3012", name: "Rosanny Contreras", depto: "Departamento de Operaciones TIC", formacion: true, talleres: 3, mentoria: 4, ideas: 0, evento: true, premio: 0, points: 0 },
-            { id: "4056", name: "Cesar Diaz", depto: "Departamento de Mercadeo", formacion: false, talleres: 2, mentoria: 0, ideas: 1, evento: false, premio: 0, points: 0 },
-            { id: "5088", name: "Ramon Sanchez", depto: "Dirección de Administración y Finanzas", formacion: true, talleres: 1, mentoria: 0, ideas: 0, evento: false, premio: 0, points: 0 }
+            { id: "1045", name: "Jorge Tonos", depto: "Dirección de TI y Comunicaciones", valores: { 'act_1': true, 'act_2': 3, 'act_3': 2, 'act_4': 2, 'act_5': true }, points: 0 },
+            { id: "2033", name: "Iris Cesa", depto: "Dirección de Gestión Humana", valores: { 'act_1': true, 'act_2': 2, 'act_3': 1, 'act_4': 1, 'act_5': false }, points: 0 },
+            { id: "3012", name: "Rosanny Contreras", depto: "Departamento de Operaciones TIC", valores: { 'act_1': true, 'act_2': 3, 'act_3': 4, 'act_4': 0, 'act_5': true }, points: 0 }
         ];
 
         let indiceEdicion = -1;
 
-        // --- CÁLCULO DINÁMICO (MODIFICADO para usar nueva estructura) ---
-        function calcularPuntos(d) {
+        // --- CÁLCULO DINÁMICO ---
+        function calcularPuntos(gestorValores) {
             let total = 0;
-            if (d.formacion) total += configNormativa.formacion.valor;          
-            total += (d.talleres || 0) * configNormativa.taller.valor;       
-            total += (d.mentoria || 0) * configNormativa.mentoria.valor;
-            total += (d.ideas || 0) * configNormativa.ideas.valor;          
-            if (d.evento) total += configNormativa.evento.valor;             
-            total += (d.premio || 0);               
+            configNormativa.forEach(item => {
+                const val = gestorValores[item.id];
+                if (item.tipo === 'check') {
+                    if (val === true || val === 'true') total += item.valor;
+                } else {
+                    // Es numérico
+                    total += (parseInt(val) || 0) * item.valor;
+                }
+            });
             return total;
         }
 
+        // --- RENDERIZADO GLOBAL ---
         function renderizar() {
-            // Actualizar etiquetas visuales de la interfaz
-            actualizarTextosInterfaz();
-
-            // Filtrado por buscador
+            // Filtrado
             const termino = document.getElementById('input-search') ? document.getElementById('input-search').value.toLowerCase() : "";
             
-            // Recalcular puntos con la configuración actual
-            datos.forEach(d => d.points = calcularPuntos(d));
+            // Recalcular puntos
+            datos.forEach(d => {
+                // Asegurar que exista objeto valores
+                if(!d.valores) d.valores = {};
+                d.points = calcularPuntos(d.valores);
+            });
             datos.sort((a, b) => b.points - a.points);
 
             const datosFiltrados = datos.filter(d => 
@@ -546,12 +469,13 @@
                 d.depto.toLowerCase().includes(termino)
             );
 
+            // KPIs
             document.getElementById('kpi-total').textContent = datos.length;
             const totalGlobal = datos.reduce((sum, item) => sum + item.points, 0);
             document.getElementById('kpi-puntos').textContent = totalGlobal.toLocaleString();
             document.getElementById('kpi-lider').textContent = datos.length > 0 ? datos[0].name : "---";
 
-            // Gráficas
+            // Gráfica Simple
             const chartPoints = document.getElementById('chart-points');
             chartPoints.innerHTML = "";
             const maxPoints = Math.max(...datos.map(d => d.points)) || 100;
@@ -569,43 +493,50 @@
                 `;
             });
 
-            const chartIdeas = document.getElementById('chart-ideas');
-            chartIdeas.innerHTML = "";
-            const maxIdeas = Math.max(...datos.map(d => d.ideas)) || 5;
-            datos.slice(0, 10).forEach(d => {
-                const percent = (d.ideas / maxIdeas) * 100;
-                if(d.ideas >= 0) {
-                    chartIdeas.innerHTML += `
-                        <div class="bar-container">
-                            <div class="bar-name">${d.name}</div>
-                            <div class="bar-bg">
-                                <div class="bar-fill" style="width: ${percent}%; background-color: var(--accent);">
-                                    ${d.ideas}
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }
+            // TABLA: Generar Cabeceras Dinámicas
+            const theadRow = document.getElementById('table-head-row');
+            let headersHTML = `<th>ID</th><th>Nombre</th><th>Depto</th>`;
+            
+            // Columnas dinámicas según configuración
+            configNormativa.forEach(item => {
+                // Cortar nombre si es muy largo para la tabla
+                let shortName = item.nombre.length > 10 ? item.nombre.substring(0, 8) + '.' : item.nombre;
+                headersHTML += `<th title="${item.nombre}" style="text-align: center;">${shortName}</th>`;
             });
 
-            // Tabla
+            headersHTML += `<th>Total PI</th><th style="text-align: center;">Acciones</th>`;
+            theadRow.innerHTML = headersHTML;
+
+            // TABLA: Generar Filas
             const tbody = document.getElementById('table-body');
             tbody.innerHTML = "";
+            
             if (datosFiltrados.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 20px; color: #94a3b8;">No se encontraron resultados para "${termino}"</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="${5 + configNormativa.length}" style="text-align:center; padding: 20px; color: #94a3b8;">No se encontraron resultados</td></tr>`;
             } else {
                 datosFiltrados.forEach((d) => {
                     const indexOriginal = datos.findIndex(item => item.id === d.id);
                     
-                    tbody.innerHTML += `
+                    let rowHTML = `
                         <tr>
                             <td><span class="id-cell">${d.id}</span></td>
                             <td style="font-weight: 600;">${d.name}</td>
                             <td><span class="badge" title="${d.depto}">${d.depto}</span></td>
-                            <td style="text-align: center;">${d.formacion ? '✅' : '-'}</td>
-                            <td style="text-align: center;">${d.talleres}</td>
-                            <td style="text-align: center;">${d.ideas}</td>
-                            <td style="text-align: center;">${d.evento ? '✅' : '-'}</td>
+                    `;
+
+                    // Celdas dinámicas
+                    configNormativa.forEach(item => {
+                        const val = d.valores[item.id];
+                        let displayVal = '-';
+                        if (item.tipo === 'check') {
+                            displayVal = val ? '✅' : '-';
+                        } else {
+                            displayVal = val > 0 ? val : '-';
+                        }
+                        rowHTML += `<td style="text-align: center;">${displayVal}</td>`;
+                    });
+
+                    rowHTML += `
                             <td style="color: var(--primary); font-weight: 800;">${d.points}</td>
                             <td style="text-align: center;">
                                 <div class="btn-group-action">
@@ -615,26 +546,14 @@
                             </td>
                         </tr>
                     `;
+                    tbody.innerHTML += rowHTML;
                 });
             }
         }
 
-        // --- GESTIÓN DE CONFIGURACIÓN (ACTUALIZADO) ---
+        // --- GESTIÓN DE CONFIGURACIÓN (NUEVA LÓGICA) ---
         function abrirConfig() {
-            // Cargar NOMBRES
-            document.getElementById('conf-name-formacion').value = configNormativa.formacion.nombre;
-            document.getElementById('conf-name-taller').value = configNormativa.taller.nombre;
-            document.getElementById('conf-name-mentoria').value = configNormativa.mentoria.nombre;
-            document.getElementById('conf-name-ideas').value = configNormativa.ideas.nombre;
-            document.getElementById('conf-name-evento').value = configNormativa.evento.nombre;
-
-            // Cargar VALORES (PUNTOS)
-            document.getElementById('conf-val-formacion').value = configNormativa.formacion.valor;
-            document.getElementById('conf-val-taller').value = configNormativa.taller.valor;
-            document.getElementById('conf-val-mentoria').value = configNormativa.mentoria.valor;
-            document.getElementById('conf-val-ideas').value = configNormativa.ideas.valor;
-            document.getElementById('conf-val-evento').value = configNormativa.evento.valor;
-            
+            renderConfigItems();
             document.getElementById('modal-config').style.display = 'flex';
         }
 
@@ -642,50 +561,99 @@
             document.getElementById('modal-config').style.display = 'none';
         }
 
-        function guardarConfig(e) {
-            e.preventDefault();
-            
-            // Guardar NOMBRES y PUNTOS
-            configNormativa.formacion.nombre = document.getElementById('conf-name-formacion').value;
-            configNormativa.formacion.valor = parseInt(document.getElementById('conf-val-formacion').value) || 0;
+        // Renderiza la lista de inputs en el modal de config
+        function renderConfigItems() {
+            const container = document.getElementById('config-items-container');
+            container.innerHTML = '';
 
-            configNormativa.taller.nombre = document.getElementById('conf-name-taller').value;
-            configNormativa.taller.valor = parseInt(document.getElementById('conf-val-taller').value) || 0;
-
-            configNormativa.mentoria.nombre = document.getElementById('conf-name-mentoria').value;
-            configNormativa.mentoria.valor = parseInt(document.getElementById('conf-val-mentoria').value) || 0;
-
-            configNormativa.ideas.nombre = document.getElementById('conf-name-ideas').value;
-            configNormativa.ideas.valor = parseInt(document.getElementById('conf-val-ideas').value) || 0;
-
-            configNormativa.evento.nombre = document.getElementById('conf-name-evento').value;
-            configNormativa.evento.valor = parseInt(document.getElementById('conf-val-evento').value) || 0;
-            
-            actualizarTextosInterfaz(); // Refrescar los textos en formularios y tablas
-            renderizar(); // Recalcular todo
-            cerrarConfig();
+            configNormativa.forEach((item, index) => {
+                container.innerHTML += `
+                    <div class="config-row" id="conf-row-${index}">
+                        <div class="config-col-name">
+                            <label class="form-label" style="font-size:11px">Nombre Actividad</label>
+                            <input type="text" class="form-input" value="${item.nombre}" onchange="actualizarConfigTemp(${index}, 'nombre', this.value)">
+                        </div>
+                        <div class="config-col-type">
+                            <label class="form-label" style="font-size:11px">Tipo</label>
+                            <select class="form-input" onchange="actualizarConfigTemp(${index}, 'tipo', this.value)">
+                                <option value="check" ${item.tipo === 'check' ? 'selected' : ''}>Si/No</option>
+                                <option value="number" ${item.tipo === 'number' ? 'selected' : ''}>Cantidad</option>
+                            </select>
+                        </div>
+                        <div class="config-col-points">
+                            <label class="form-label" style="font-size:11px">Puntos</label>
+                            <input type="number" class="form-input" value="${item.valor}" onchange="actualizarConfigTemp(${index}, 'valor', this.value)">
+                        </div>
+                        <button type="button" class="btn-delete-item" onclick="eliminarActividadConfig(${index})" title="Eliminar Actividad">
+                            &times;
+                        </button>
+                    </div>
+                `;
+            });
         }
 
-        // --- FUNCIÓN NUEVA: ACTUALIZA TEXTOS EN PANTALLA SEGÚN CONFIG ---
-        function actualizarTextosInterfaz() {
-            // 1. En el formulario de registro (Labels principales)
-            document.getElementById('lbl-taller').textContent = configNormativa.taller.nombre;
-            document.getElementById('lbl-mentoria').textContent = configNormativa.mentoria.nombre;
-            document.getElementById('lbl-ideas').textContent = configNormativa.ideas.nombre;
+        function agregarActividadConfig() {
+            // Añadir nueva actividad vacía
+            const newId = 'act_' + Date.now(); // ID único basado en tiempo
+            configNormativa.push({ id: newId, nombre: "Nueva Actividad", tipo: 'number', valor: 0 });
+            renderConfigItems(); // Re-pintar la lista (scroll se mantiene)
+            
+            // Scroll al final
+            const container = document.getElementById('config-items-container');
+            setTimeout(() => container.scrollTop = container.scrollHeight, 100);
+        }
 
-            // 2. En el formulario de registro (Hints/Subtextos con puntos)
-            document.getElementById('hint-formacion').textContent = `${configNormativa.formacion.nombre} (+${configNormativa.formacion.valor} PI)`;
-            document.getElementById('hint-taller').textContent = `* ${configNormativa.taller.valor} PI c/u (Máx 3)`;
-            document.getElementById('hint-mentoria').textContent = `* ${configNormativa.mentoria.valor} PI c/u (Máx 5)`;
-            document.getElementById('hint-ideas').textContent = `* ${configNormativa.ideas.valor} PI por idea`;
-            document.getElementById('hint-evento').textContent = `${configNormativa.evento.nombre} (+${configNormativa.evento.valor} PI)`;
+        function eliminarActividadConfig(index) {
+            if(confirm("¿Eliminar esta actividad? Se perderán los datos asociados en futuros registros.")) {
+                configNormativa.splice(index, 1);
+                renderConfigItems();
+            }
+        }
 
-            // 3. En la tabla principal (Encabezados de columna)
-            // Abreviamos un poco si es muy largo para que no rompa la tabla, o usamos el nombre completo en 'title'
-            document.getElementById('th-formacion').title = configNormativa.formacion.nombre;
-            document.getElementById('th-taller').title = configNormativa.taller.nombre;
-            document.getElementById('th-ideas').title = configNormativa.ideas.nombre;
-            document.getElementById('th-evento').title = configNormativa.evento.nombre;
+        function actualizarConfigTemp(index, field, value) {
+            if (field === 'valor') value = parseInt(value) || 0;
+            configNormativa[index][field] = value;
+        }
+
+        function guardarConfig(e) {
+            e.preventDefault();
+            // Ya hemos ido actualizando configNormativa en tiempo real con los onchange
+            renderizar(); // Actualizar tabla y formulario principal
+            cerrarConfig();
+            alert("¡Configuración actualizada!");
+        }
+
+        // --- RENDERIZAR FORMULARIO DE REGISTRO DINÁMICO ---
+        function renderFormFields(valoresActuales = {}) {
+            const container = document.getElementById('dynamic-form-fields');
+            container.innerHTML = '';
+
+            configNormativa.forEach(item => {
+                const val = valoresActuales[item.id]; // Valor existente si editamos
+
+                let html = `<div style="margin-bottom: 12px;">`;
+                
+                if (item.tipo === 'check') {
+                    // Checkbox
+                    const checked = (val === true || val === 'true') ? 'checked' : '';
+                    html += `
+                        <label class="checkbox-wrapper">
+                            <input type="checkbox" id="field_${item.id}" onchange="calcularTotalEnVivo()" ${checked}>
+                            <span>${item.nombre} <strong style="color:var(--primary)">(+${item.valor} PI)</strong></span>
+                        </label>
+                    `;
+                } else {
+                    // Number
+                    const numVal = val || '';
+                    html += `
+                        <label class="form-label">${item.nombre}</label>
+                        <input type="number" id="field_${item.id}" class="form-input" placeholder="0" min="0" value="${numVal}" oninput="calcularTotalEnVivo()">
+                        <span class="hint">* ${item.valor} PI por unidad</span>
+                    `;
+                }
+                html += `</div>`;
+                container.innerHTML += html;
+            });
         }
 
         // --- LÓGICA DEPARTAMENTOS ---
@@ -704,12 +672,15 @@
             }
         }
 
-        // --- FORMULARIO ---
+        // --- FUNCIONES FORMULARIO PRINCIPAL ---
         function abrirModal() { 
             indiceEdicion = -1;
             document.getElementById('form-gestor').reset();
             verificarOtroDepto(); 
-            actualizarTextosInterfaz(); // Asegurar que los textos están al día
+            
+            // Generar campos dinámicos vacíos
+            renderFormFields({});
+            
             document.getElementById('modal-title').textContent = "Registrar Nuevo Gestor";
             document.getElementById('btn-save-text').textContent = "Guardar Registro";
             document.getElementById('input-id').disabled = false; 
@@ -725,8 +696,13 @@
             document.getElementById('input-nombre').value = gestor.name;
             
             const select = document.getElementById('input-depto');
-            const opciones = Array.from(select.options).map(o => o.value);
-            if (opciones.includes(gestor.depto)) {
+            // Verificar si el depto existe en el select
+            let found = false;
+            for(let i=0; i<select.options.length; i++) {
+                if(select.options[i].value === gestor.depto) found = true;
+            }
+
+            if (found) {
                 select.value = gestor.depto;
             } else {
                 select.value = 'OTRO';
@@ -734,14 +710,9 @@
             }
             verificarOtroDepto(); 
 
-            document.getElementById('check-formacion').checked = gestor.formacion;
-            document.getElementById('input-talleres').value = gestor.talleres;
-            document.getElementById('input-mentoria').value = gestor.mentoria;
-            document.getElementById('input-ideas').value = gestor.ideas;
-            document.getElementById('check-evento').checked = gestor.evento;
-            document.getElementById('input-premio').value = gestor.premio;
+            // Generar campos dinámicos con valores cargados
+            renderFormFields(gestor.valores || {});
 
-            actualizarTextosInterfaz();
             document.getElementById('modal-title').textContent = "Modificar Datos";
             document.getElementById('btn-save-text').textContent = "Guardar Cambios";
             document.getElementById('input-id').disabled = true; 
@@ -754,6 +725,7 @@
             e.preventDefault();
             const idInput = document.getElementById('input-id').value;
             
+            // Depto logic
             const select = document.getElementById('input-depto');
             let departamentoFinal = select.value;
             if (departamentoFinal === 'OTRO') {
@@ -764,17 +736,23 @@
                 }
             }
 
+            // Capturar valores dinámicos
+            let nuevosValores = {};
+            configNormativa.forEach(item => {
+                const element = document.getElementById(`field_${item.id}`);
+                if (item.tipo === 'check') {
+                    nuevosValores[item.id] = element.checked;
+                } else {
+                    nuevosValores[item.id] = parseInt(element.value) || 0;
+                }
+            });
+
             const gestorFormulario = {
                 id: idInput,
                 name: document.getElementById('input-nombre').value,
                 depto: departamentoFinal, 
-                formacion: document.getElementById('check-formacion').checked,
-                talleres: parseInt(document.getElementById('input-talleres').value) || 0,
-                mentoria: parseInt(document.getElementById('input-mentoria').value) || 0,
-                ideas: parseInt(document.getElementById('input-ideas').value) || 0,
-                evento: document.getElementById('check-evento').checked,
-                premio: parseInt(document.getElementById('input-premio').value) || 0,
-                points: 0
+                valores: nuevosValores, // Objeto dinámico
+                points: 0 // Se calculará en renderizar()
             };
 
             if (indiceEdicion === -1) {
@@ -792,15 +770,19 @@
         }
 
         function calcularTotalEnVivo() {
-            const temp = {
-                formacion: document.getElementById('check-formacion').checked,
-                talleres: parseInt(document.getElementById('input-talleres').value) || 0,
-                mentoria: parseInt(document.getElementById('input-mentoria').value) || 0,
-                ideas: parseInt(document.getElementById('input-ideas').value) || 0,
-                evento: document.getElementById('check-evento').checked,
-                premio: parseInt(document.getElementById('input-premio').value) || 0
-            };
-            document.getElementById('preview-total').textContent = calcularPuntos(temp).toLocaleString();
+            // Crear objeto temporal con lo que hay en el DOM
+            let tempValores = {};
+            configNormativa.forEach(item => {
+                const element = document.getElementById(`field_${item.id}`);
+                if (element) {
+                    if (item.tipo === 'check') {
+                        tempValores[item.id] = element.checked;
+                    } else {
+                        tempValores[item.id] = parseInt(element.value) || 0;
+                    }
+                }
+            });
+            document.getElementById('preview-total').textContent = calcularPuntos(tempValores).toLocaleString();
         }
 
         function eliminarGestor(index) {
@@ -815,8 +797,7 @@
             indiceEdicion = -1;
         }
 
-        // Inicializar textos de ayuda
-        actualizarTextosInterfaz();
+        // Inicializar
         renderizar();
     </script>
 </body>
