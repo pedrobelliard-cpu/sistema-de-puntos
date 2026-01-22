@@ -264,8 +264,9 @@
                 <div id="chart-points"></div>
             </div>
             <div class="chart-box">
-                <div class="chart-header">💡 Distribución de Actividades</div>
-                <div id="chart-ideas"></div> </div>
+                <div class="chart-header" id="chart-header-ideas">💡 Ideas Propias Implementadas</div>
+                <div id="chart-ideas"></div> 
+            </div>
         </div>
 
         <div class="table-box">
@@ -416,7 +417,6 @@
 
     <script>
         // --- 1. CONFIGURACIÓN INICIAL (DINÁMICA) ---
-        // Ahora es un Array para permitir infinitas actividades
         let configNormativa = [
             { id: 'act_1', nombre: "Programa de Formación", tipo: 'check', valor: 400 },
             { id: 'act_2', nombre: "Por Taller Asistido", tipo: 'number', valor: 200 },
@@ -425,8 +425,7 @@
             { id: 'act_5', nombre: "Por Evento Anual", tipo: 'check', valor: 500 }
         ];
 
-        // --- DATOS INICIALES (Adaptados al nuevo formato dinámico) ---
-        // 'valores' guardará { 'act_1': true, 'act_2': 3, etc. }
+        // --- DATOS INICIALES ---
         let datos = [
             { id: "1045", name: "Jorge Tonos", depto: "Dirección de TI y Comunicaciones", valores: { 'act_1': true, 'act_2': 3, 'act_3': 2, 'act_4': 2, 'act_5': true }, points: 0 },
             { id: "2033", name: "Iris Cesa", depto: "Dirección de Gestión Humana", valores: { 'act_1': true, 'act_2': 2, 'act_3': 1, 'act_4': 1, 'act_5': false }, points: 0 },
@@ -443,7 +442,6 @@
                 if (item.tipo === 'check') {
                     if (val === true || val === 'true') total += item.valor;
                 } else {
-                    // Es numérico
                     total += (parseInt(val) || 0) * item.valor;
                 }
             });
@@ -457,7 +455,6 @@
             
             // Recalcular puntos
             datos.forEach(d => {
-                // Asegurar que exista objeto valores
                 if(!d.valores) d.valores = {};
                 d.points = calcularPuntos(d.valores);
             });
@@ -475,7 +472,7 @@
             document.getElementById('kpi-puntos').textContent = totalGlobal.toLocaleString();
             document.getElementById('kpi-lider').textContent = datos.length > 0 ? datos[0].name : "---";
 
-            // Gráfica Simple
+            // Gráfica 1: Ranking Global
             const chartPoints = document.getElementById('chart-points');
             chartPoints.innerHTML = "";
             const maxPoints = Math.max(...datos.map(d => d.points)) || 100;
@@ -493,13 +490,49 @@
                 `;
             });
 
+            // Gráfica 2: Ideas (RESTAURADO)
+            // Lógica inteligente: Busca la actividad que tenga "Idea" en el nombre, si no encuentra, usa la 4ta por defecto
+            const chartIdeas = document.getElementById('chart-ideas');
+            chartIdeas.innerHTML = "";
+            
+            // Buscamos la actividad correcta
+            const ideaActivity = configNormativa.find(c => c.nombre.includes("Idea")) || configNormativa.find(c => c.tipo === 'number');
+
+            if (ideaActivity) {
+                // Actualizamos el título del gráfico dinámicamente
+                document.getElementById('chart-header-ideas').textContent = `💡 ${ideaActivity.nombre}`;
+
+                // Calcular máximo para la barra 100%
+                const maxVal = Math.max(...datos.map(d => parseInt(d.valores[ideaActivity.id]) || 0)) || 5;
+
+                datos.slice(0, 10).forEach(d => {
+                    const val = parseInt(d.valores[ideaActivity.id]) || 0;
+                    // Solo mostramos si hay datos, o mostramos 0
+                    const percent = (val / maxVal) * 100;
+                    
+                    if(val >= 0) {
+                        chartIdeas.innerHTML += `
+                            <div class="bar-container">
+                                <div class="bar-name">${d.name}</div>
+                                <div class="bar-bg">
+                                    <div class="bar-fill" style="width: ${percent}%; background-color: var(--accent);">
+                                        ${val}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+            } else {
+                chartIdeas.innerHTML = "<p style='color:#999; font-size:12px; text-align:center;'>No se encontró actividad de 'Ideas' configurada.</p>";
+            }
+
+
             // TABLA: Generar Cabeceras Dinámicas
             const theadRow = document.getElementById('table-head-row');
             let headersHTML = `<th>ID</th><th>Nombre</th><th>Depto</th>`;
             
-            // Columnas dinámicas según configuración
             configNormativa.forEach(item => {
-                // Cortar nombre si es muy largo para la tabla
                 let shortName = item.nombre.length > 10 ? item.nombre.substring(0, 8) + '.' : item.nombre;
                 headersHTML += `<th title="${item.nombre}" style="text-align: center;">${shortName}</th>`;
             });
@@ -524,7 +557,6 @@
                             <td><span class="badge" title="${d.depto}">${d.depto}</span></td>
                     `;
 
-                    // Celdas dinámicas
                     configNormativa.forEach(item => {
                         const val = d.valores[item.id];
                         let displayVal = '-';
@@ -551,7 +583,7 @@
             }
         }
 
-        // --- GESTIÓN DE CONFIGURACIÓN (NUEVA LÓGICA) ---
+        // --- GESTIÓN DE CONFIGURACIÓN ---
         function abrirConfig() {
             renderConfigItems();
             document.getElementById('modal-config').style.display = 'flex';
@@ -561,7 +593,6 @@
             document.getElementById('modal-config').style.display = 'none';
         }
 
-        // Renderiza la lista de inputs en el modal de config
         function renderConfigItems() {
             const container = document.getElementById('config-items-container');
             container.innerHTML = '';
@@ -593,12 +624,9 @@
         }
 
         function agregarActividadConfig() {
-            // Añadir nueva actividad vacía
-            const newId = 'act_' + Date.now(); // ID único basado en tiempo
+            const newId = 'act_' + Date.now(); 
             configNormativa.push({ id: newId, nombre: "Nueva Actividad", tipo: 'number', valor: 0 });
-            renderConfigItems(); // Re-pintar la lista (scroll se mantiene)
-            
-            // Scroll al final
+            renderConfigItems(); 
             const container = document.getElementById('config-items-container');
             setTimeout(() => container.scrollTop = container.scrollHeight, 100);
         }
@@ -617,8 +645,7 @@
 
         function guardarConfig(e) {
             e.preventDefault();
-            // Ya hemos ido actualizando configNormativa en tiempo real con los onchange
-            renderizar(); // Actualizar tabla y formulario principal
+            renderizar();
             cerrarConfig();
             alert("¡Configuración actualizada!");
         }
@@ -629,12 +656,11 @@
             container.innerHTML = '';
 
             configNormativa.forEach(item => {
-                const val = valoresActuales[item.id]; // Valor existente si editamos
+                const val = valoresActuales[item.id]; 
 
                 let html = `<div style="margin-bottom: 12px;">`;
                 
                 if (item.tipo === 'check') {
-                    // Checkbox
                     const checked = (val === true || val === 'true') ? 'checked' : '';
                     html += `
                         <label class="checkbox-wrapper">
@@ -643,7 +669,6 @@
                         </label>
                     `;
                 } else {
-                    // Number
                     const numVal = val || '';
                     html += `
                         <label class="form-label">${item.nombre}</label>
@@ -677,8 +702,6 @@
             indiceEdicion = -1;
             document.getElementById('form-gestor').reset();
             verificarOtroDepto(); 
-            
-            // Generar campos dinámicos vacíos
             renderFormFields({});
             
             document.getElementById('modal-title').textContent = "Registrar Nuevo Gestor";
@@ -696,7 +719,6 @@
             document.getElementById('input-nombre').value = gestor.name;
             
             const select = document.getElementById('input-depto');
-            // Verificar si el depto existe en el select
             let found = false;
             for(let i=0; i<select.options.length; i++) {
                 if(select.options[i].value === gestor.depto) found = true;
@@ -710,7 +732,6 @@
             }
             verificarOtroDepto(); 
 
-            // Generar campos dinámicos con valores cargados
             renderFormFields(gestor.valores || {});
 
             document.getElementById('modal-title').textContent = "Modificar Datos";
@@ -725,7 +746,6 @@
             e.preventDefault();
             const idInput = document.getElementById('input-id').value;
             
-            // Depto logic
             const select = document.getElementById('input-depto');
             let departamentoFinal = select.value;
             if (departamentoFinal === 'OTRO') {
@@ -736,7 +756,6 @@
                 }
             }
 
-            // Capturar valores dinámicos
             let nuevosValores = {};
             configNormativa.forEach(item => {
                 const element = document.getElementById(`field_${item.id}`);
@@ -751,8 +770,8 @@
                 id: idInput,
                 name: document.getElementById('input-nombre').value,
                 depto: departamentoFinal, 
-                valores: nuevosValores, // Objeto dinámico
-                points: 0 // Se calculará en renderizar()
+                valores: nuevosValores, 
+                points: 0 
             };
 
             if (indiceEdicion === -1) {
@@ -770,7 +789,6 @@
         }
 
         function calcularTotalEnVivo() {
-            // Crear objeto temporal con lo que hay en el DOM
             let tempValores = {};
             configNormativa.forEach(item => {
                 const element = document.getElementById(`field_${item.id}`);
