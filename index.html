@@ -319,8 +319,11 @@
         // ==========================================
         // 🔒 ÁREA DE SEGURIDAD (CONEXIÓN GOOGLE)
         // ==========================================
-        const URL_GOOGLE = "https://script.google.com/macros/s/AKfycbxF_pEvbxuFpbimNqwQb9O-WH9_OL4a7BYE7CTkVnTVB2yAH_zxkPAF-3P9eB-Zixxy/exec
-";
+        
+        // URL ACTUALIZADA
+        const URL_GOOGLE = "https://script.google.com/macros/s/AKfycbxF_pEvbxuFpbimNqwQb9O-WH9_OL4a7BYE7CTkVnTVB2yAH_zxkPAF-3P9eB-Zixxy/exec";
+        
+        // ======================================
 
         function iniciarSesion() {
             const user = document.getElementById('user-input').value;
@@ -363,6 +366,8 @@
             })
             .catch(error => {
                 console.error(error);
+                // Mostrar alerta visible para el usuario si falla la conexión
+                alert("Error de conexión:\nNo se pudo conectar con Google Sheets.\n\nVerifica:\n1. Que tienes internet.\n2. Que la URL de Apps Script es correcta.\n3. Que publicaste el script como 'Cualquier usuario' (Anyone).");
                 msg.textContent = "Error de conexión con la base de datos.";
                 btn.textContent = "INGRESAR";
                 btn.disabled = false;
