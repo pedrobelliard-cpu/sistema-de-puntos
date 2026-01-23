@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -9,8 +10,11 @@
         #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); z-index: 9999; display: flex; justify-content: center; align-items: center; }
         .login-box { background: white; padding: 40px; border-radius: 16px; width: 320px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
         .login-input { width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; font-size: 16px; text-align: center; }
-        .login-btn { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; }
-        .login-btn:disabled { background: #94a3b8; cursor: wait; }
+        
+        /* BOTÓN CON ANIMACIÓN */
+        .login-btn { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; transition: transform 0.1s; }
+        .login-btn:active { transform: scale(0.96); } /* Efecto de hundirse al presionar */
+        .login-btn:disabled { background: #94a3b8; cursor: wait; transform: none; }
         
         /* LOADER (Cargando) */
         #loader-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:5000; justify-content:center; align-items:center; flex-direction:column; }
@@ -53,6 +57,11 @@
         .bar-container { display: flex; align-items: center; margin-bottom: 15px; font-size: 14px; }
         .bar-bg { flex: 1; background: #f1f5f9; height: 28px; border-radius: 6px; position: relative; overflow: hidden; margin-left:10px;}
         .bar-fill { height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; color: white; font-weight: bold; font-size: 12px; }
+        
+        /* ESTILO DEL INPUT DE BÚSQUEDA AZUL */
+        #input-search { border: 2px solid var(--primary); background-color: #eff6ff; color: #1e3a8a; padding: 10px; border-radius: 6px; width: 250px; outline: none; }
+        #input-search:focus { box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2); }
+
         @media print { .actions, .btn-group-action, .search-container, #login-screen { display: none !important; } }
     </style>
 </head>
@@ -79,7 +88,7 @@
             <div class="header">
                 <div>
                     <h1>Dep. Investigación Aplicada a la Innovación</h1>
-                    <p>Módulo de Gestión de Puntos | <span id="nombre-tecnico" style="color:var(--secondary)">Acceso Seguro</span></p>
+                    <p>Módulo de Gestión de Puntos | <span id="nombre-tecnico" style="color:#3b82f6; font-weight:800; font-size: 1.1em;">Acceso Seguro</span></p>
                 </div>
                 <div class="actions">
                     <button class="btn-config" onclick="abrirConfig()">⚙️</button>
@@ -102,7 +111,9 @@
             <div class="table-box">
                 <div class="table-header-row">
                     <div class="table-title">Directorio</div>
-                    <div class="search-container"><input type="text" id="input-search" placeholder="🔍 Buscar..." onkeyup="renderizar()"></div>
+                    <div class="search-container">
+                        <input type="text" id="input-search" placeholder="🔍 Buscar..." onkeyup="renderizar()">
+                    </div>
                 </div>
                 <table id="main-table"><thead><tr id="table-head-row"></tr></thead><tbody id="table-body"></tbody></table>
             </div>
@@ -160,7 +171,7 @@
         // ==========================================
         // 🔗 URL DE TU SCRIPT DE GOOGLE
         // ==========================================
-        const URL_GOOGLE = "https://script.google.com/macros/s/AKfycbyIOmYwLepD1NT9NisyM6GCPW1UIn_vljL_uiZTAkAJUbOZrd78-z74ggfiwHN0cAJB/exec"; 
+        const URL_GOOGLE = "https://script.google.com/macros/s/AKfycbyIOmYwLepD1NT9NisyM6GCPW1UIn_vljL_uiZTAkAJUbOZrd78-z74ggfiwHN0cAJB/exec";
 
         // Variables Globales
         let datos = [];
@@ -185,8 +196,9 @@
                 if(res.validado) {
                     document.getElementById('login-screen').style.display = 'none';
                     document.getElementById('sistema-principal').style.display = 'block';
+                    // Aquí se pone la bienvenida
                     document.getElementById('nombre-tecnico').textContent = "Bienvenido " + res.nombre;
-                    cargarDatosDelServidor(); // CARGAR DATOS REALES
+                    cargarDatosDelServidor(); 
                 } else {
                     ocultarLoader();
                     document.getElementById('msg-error').textContent = "Credenciales incorrectas.";
@@ -207,10 +219,8 @@
             .then(res => {
                 datos = res.gestores;
                 configNormativa = res.config;
-                
                 // Recalcular puntos
                 datos.forEach(d => d.points = calcularPuntos(d.valores));
-                
                 renderizar();
                 ocultarLoader();
             })
@@ -230,7 +240,6 @@
                 valores[item.id] = item.tipo === 'check' ? el.checked : (parseInt(el.value)||0);
             });
 
-            // Si es nuevo, verificar ID localmente antes de enviar
             if (indiceEdicion === -1 && datos.find(d => d.id == idInput)) {
                 alert("Error: El ID ya existe."); return;
             }
@@ -250,7 +259,7 @@
             .then(res => {
                 if(res.exito) {
                     cerrarModal();
-                    cargarDatosDelServidor(); // Recargar para asegurar sincronicidad
+                    cargarDatosDelServidor(); 
                 }
             });
         }
@@ -291,7 +300,6 @@
         function guardarConfigRemoto(e) {
             e.preventDefault();
             mostrarLoader("Actualizando configuración...");
-            // configNormativa ya se actualizó en tiempo real en los inputs, solo enviamos
             fetch(URL_GOOGLE, {
                 method: 'POST',
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -367,13 +375,12 @@
         }
 
         function renderCharts(activos) {
-            // Chart 1
             const c1 = document.getElementById('chart-points'); c1.innerHTML="";
             const max = Math.max(...activos.map(d=>d.points)) || 100;
             activos.slice(0,10).forEach(d => {
                 c1.innerHTML += `<div class="bar-container"><div class="bar-name">${d.name}</div><div class="bar-bg"><div class="bar-fill" style="width:${(d.points/max)*100}%; background:var(--primary)">${d.points}</div></div></div>`;
             });
-            // Chart 2 (Buscar primera actividad numérica)
+
             const c2 = document.getElementById('chart-ideas'); c2.innerHTML="";
             const actIdea = configNormativa.find(c => c.tipo === 'number');
             if(actIdea) {
