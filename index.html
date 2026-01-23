@@ -5,139 +5,70 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión de Puntos 2026</title>
     <style>
-        /* --- ESTILOS DE SEGURIDAD (LOGIN) --- */
-        #login-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            z-index: 9999; display: flex; justify-content: center; align-items: center;
-        }
-        .login-box {
-            background: white; padding: 40px; border-radius: 16px; width: 320px; text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-        .login-input {
-            width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #e2e8f0;
-            border-radius: 8px; box-sizing: border-box; font-size: 16px; text-align: center; transition: 0.3s;
-        }
-        .login-input:focus { border-color: #2563eb; outline: none; }
-        .login-btn {
-            width: 100%; padding: 12px; background: #2563eb; color: white; border: none;
-            border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s;
-        }
-        .login-btn:hover { background: #1d4ed8; }
-        .login-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+        /* ESTILOS DE SEGURIDAD */
+        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); z-index: 9999; display: flex; justify-content: center; align-items: center; }
+        .login-box { background: white; padding: 40px; border-radius: 16px; width: 320px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        .login-input { width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; font-size: 16px; text-align: center; }
+        .login-btn { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        .login-btn:disabled { background: #94a3b8; cursor: wait; }
+        
+        /* LOADER (Cargando) */
+        #loader-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:5000; justify-content:center; align-items:center; flex-direction:column; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #2563eb; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom:10px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* --- ESTILOS VISUALES DEL PROGRAMA (INTACTOS) --- */
-        :root {
-            --primary: #2563eb; --secondary: #1e293b; --accent: #10b981;
-            --bg: #f1f5f9; --card: #ffffff; --danger: #ef4444;
-            --edit: #f59e0b; --inactive: #64748b;
-        }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); color: var(--secondary);
-            margin: 0; padding: 20px; display: flex; flex-direction: column; min-height: 100vh;
-        }
+        /* ESTILOS DEL PROGRAMA */
+        :root { --primary: #2563eb; --secondary: #1e293b; --accent: #10b981; --bg: #f1f5f9; --card: #ffffff; --danger: #ef4444; --edit: #f59e0b; --inactive: #64748b; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); color: var(--secondary); margin: 0; padding: 20px; display: flex; flex-direction: column; min-height: 100vh; }
         .container { max-width: 1280px; margin: 0 auto; width: 100%; flex: 1; }
-        
-        /* HEADER */
-        .header { display: flex; justify-content: space-between; align-items: center; background: var(--card); 
-            padding: 20px 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 30px;
-            border-left: 5px solid var(--primary); }
-        .header h1 { margin: 0; font-size: 22px; color: var(--secondary); text-transform: uppercase; letter-spacing: 0.5px; }
-        .header p { margin: 5px 0 0; color: var(--primary); font-size: 15px; font-weight: 700; }
+        .header { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 20px 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 30px; border-left: 5px solid var(--primary); }
+        .header h1 { margin: 0; font-size: 22px; color: var(--secondary); text-transform: uppercase; }
         .actions { display: flex; gap: 10px; }
-        
-        .btn-main { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 8px; 
-            font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
-        .btn-main:hover { background: #1d4ed8; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); }
-        .btn-print { background: var(--secondary); color: white; border: none; padding: 12px 20px; border-radius: 8px; 
-            font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-        .btn-config { background: #cbd5e1; color: #334155; border: none; padding: 12px; border-radius: 8px; 
-            font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-
-        /* KPI CARDS */
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .card { background: var(--card); padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .kpi-title { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; font-weight: 700; }
-        .kpi-number { font-size: 36px; font-weight: 800; margin-top: 10px; color: var(--secondary); }
-        
-        /* GRÁFICAS */
-        .charts-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 25px; margin-bottom: 30px; }
-        .chart-box { background: var(--card); padding: 25px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .chart-header { font-weight: bold; margin-bottom: 20px; font-size: 18px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; }
-        .bar-container { display: flex; align-items: center; margin-bottom: 15px; font-size: 14px; }
-        .bar-name { width: 140px; text-align: right; padding-right: 15px; font-weight: 500; color: #475569; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .bar-bg { flex: 1; background: #f1f5f9; height: 28px; border-radius: 6px; overflow: hidden; position: relative; }
-        .bar-fill { height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; color: white; font-weight: bold; font-size: 12px; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-
-        /* TABLA */
-        .table-box { background: var(--card); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.02); overflow-x: auto; }
-        .table-header-row { display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; border-bottom: 1px solid #e2e8f0; }
-        .table-title { font-weight: bold; font-size: 18px; }
-        .search-container input { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; width: 250px; outline: none; transition: 0.2s; }
-        .search-container input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-        table { width: 100%; border-collapse: collapse; text-align: left; min-width: 800px; }
-        th { background: #f8fafc; padding: 18px 25px; font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; border-bottom: 1px solid #e2e8f0; white-space: nowrap; }
-        td { padding: 18px 25px; border-bottom: 1px solid #f1f5f9; color: #334155; }
-        tr:last-child td { border-bottom: none; }
-        tr:hover { background-color: #f8fafc; }
-        
-        /* ESTILOS PARA FILA INACTIVA */
+        .btn-main, .btn-print, .btn-config { padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; border:none; display:flex; align-items:center; gap:8px; color:white;}
+        .btn-main { background: var(--primary); } .btn-print { background: var(--secondary); } .btn-config { background: #cbd5e1; color:#334155; }
+        .kpi-grid, .charts-section { display: grid; gap: 20px; margin-bottom: 30px; }
+        .kpi-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+        .charts-section { grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); }
+        .card, .chart-box, .table-box { background: var(--card); padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0; }
+        .kpi-number { font-size: 36px; font-weight: 800; margin-top: 10px; }
+        .table-box { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        th { background: #f8fafc; padding: 18px; font-size: 11px; text-transform: uppercase; color: #64748b; }
+        td { padding: 18px; border-bottom: 1px solid #f1f5f9; }
         .tr-inactive { background-color: #f1f5f9 !important; opacity: 0.6; filter: grayscale(100%); }
-        .badge { background: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; display: inline-block; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle; }
-        .id-cell { font-family: monospace; font-weight: bold; color: #64748b; background: #f1f5f9; padding: 4px 8px; border-radius: 4px; font-size: 13px; border: 1px solid #e2e8f0; }
-        
-        /* BOTONES ACCIÓN */
+        .badge { background: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; }
+        .id-cell { font-family: monospace; background: #f1f5f9; padding: 4px 8px; border-radius: 4px; border: 1px solid #e2e8f0; }
         .btn-group-action { display: flex; gap: 8px; justify-content: center; }
-        .btn-icon { border: 1px solid #e2e8f0; background: white; padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: 0.2s; font-size: 14px; }
-        .btn-edit { color: var(--primary); border-color: #bfdbfe; }
-        .btn-edit:hover { background: var(--primary); color: white; }
-        .btn-delete { color: var(--danger); border-color: #fecaca; }
-        .btn-delete:hover { background: var(--danger); color: white; }
-        .btn-toggle { color: var(--edit); border-color: #fde68a; }
-        .btn-toggle:hover { background: var(--edit); color: white; }
-
-        /* MODAL */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 100; justify-content: center; align-items: center; }
-        .modal-content { background: white; width: 90%; max-width: 650px; padding: 30px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); animation: slideIn 0.3s ease; max-height: 90vh; overflow-y: auto; }
-        @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .form-full { grid-column: span 2; }
-        .form-label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: #475569; }
-        .form-input { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 5px; font-size: 14px; outline: none; transition: border 0.2s; box-sizing: border-box; }
-        .form-input:focus { border-color: var(--primary); }
-        .hint { font-size: 12px; color: #94a3b8; margin-bottom: 10px; display: block; }
-        .checkbox-wrapper { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; }
-        .checkbox-wrapper:hover { background: #f8fafc; }
+        .btn-icon { border: 1px solid #e2e8f0; background: white; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
+        .btn-edit { color: var(--primary); } .btn-delete { color: var(--danger); } .btn-toggle { color: var(--edit); }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 100; justify-content: center; align-items: center; }
+        .modal-content { background: white; width: 90%; max-width: 650px; padding: 30px; border-radius: 16px; max-height: 90vh; overflow-y: auto; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; } .form-full { grid-column: span 2; }
+        .form-input { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; }
         .btn-group { display: flex; gap: 10px; margin-top: 20px; grid-column: span 2; }
-        .btn-save { flex: 2; background: var(--secondary); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .btn-cancel { flex: 1; background: transparent; color: #64748b; border: 2px solid #e2e8f0; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .total-preview { grid-column: span 2; background: #eff6ff; padding: 15px; text-align: center; border-radius: 8px; color: var(--primary); font-weight: 800; font-size: 18px; border: 1px solid #bfdbfe; margin-top: 10px; }
-        #div-otro-depto { animation: fadeIn 0.3s ease; } @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
-        /* CONFIG EXPANDIBLE */
-        .config-scroll-area { max-height: 400px; overflow-y: auto; padding-right: 10px; margin-bottom: 15px; border: 1px solid #f1f5f9; padding: 10px; border-radius: 8px; }
-        .config-row { display: flex; gap: 10px; align-items: flex-end; margin-bottom: 15px; background: #f8fafc; padding: 10px; border-radius: 8px; position: relative;}
-        .config-col-name { flex: 2; } .config-col-type { flex: 1; } .config-col-points { flex: 1; }
-        .btn-delete-item { color: var(--danger); cursor: pointer; border: none; background: transparent; font-size: 16px; margin-bottom: 8px;}
-
-        @media print {
-            .actions, .btn-group-action, th:last-child, td:last-child, .search-container, #login-screen { display: none !important; }
-            body { background: white; padding: 0; }
-            .container { max-width: 100%; display: block !important; } /* Asegurar que se imprima aunque esté hidden por JS */
-            .card, .chart-box, .table-box { box-shadow: none; border: 1px solid #ccc; }
-        }
+        .btn-save { flex: 2; background: var(--secondary); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; }
+        .btn-cancel { flex: 1; border: 2px solid #e2e8f0; background: transparent; padding: 12px; border-radius: 8px; cursor: pointer; }
+        .config-scroll-area { max-height: 300px; overflow-y: auto; margin-bottom: 15px; border: 1px solid #f1f5f9; padding: 10px; }
+        .config-row { display: flex; gap: 10px; align-items: flex-end; margin-bottom: 10px; background: #f8fafc; padding: 10px; border-radius: 8px; }
+        .bar-container { display: flex; align-items: center; margin-bottom: 15px; font-size: 14px; }
+        .bar-bg { flex: 1; background: #f1f5f9; height: 28px; border-radius: 6px; position: relative; overflow: hidden; margin-left:10px;}
+        .bar-fill { height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; color: white; font-weight: bold; font-size: 12px; }
+        @media print { .actions, .btn-group-action, .search-container, #login-screen { display: none !important; } }
     </style>
 </head>
 <body>
+
+    <div id="loader-overlay">
+        <div class="spinner"></div>
+        <div style="font-weight:bold; color:#1e293b" id="loader-text">Conectando con Google Sheets...</div>
+    </div>
 
     <div id="login-screen">
         <div class="login-box">
             <h2 style="color:#2563eb; margin-top:0;">Acceso Técnico</h2>
             <p style="color:#64748b; font-size:14px; margin-bottom:20px;">Sistema de Gestión 2026</p>
-            
             <input type="text" id="user-input" class="login-input" placeholder="Usuario">
             <input type="password" id="pass-input" class="login-input" placeholder="Contraseña">
-            
             <button onclick="iniciarSesion()" id="btn-login" class="login-btn">INGRESAR</button>
             <p id="msg-error" style="color:#ef4444; font-size:12px; margin-top:15px; min-height:15px;"></p>
         </div>
@@ -145,152 +76,64 @@
 
     <div id="sistema-principal" style="display:none;">
         <div class="container">
-            
             <div class="header">
                 <div>
                     <h1>Dep. Investigación Aplicada a la Innovación</h1>
                     <p>Módulo de Gestión de Puntos | <span id="nombre-tecnico" style="color:var(--secondary)">Acceso Seguro</span></p>
                 </div>
                 <div class="actions">
-                    <button class="btn-config" onclick="abrirConfig()" title="Configuración de Puntos">⚙️</button>
+                    <button class="btn-config" onclick="abrirConfig()">⚙️</button>
                     <button class="btn-print" onclick="window.print()">🖨️ Imprimir</button>
                     <button class="btn-main" onclick="abrirModal()"><span>+</span> Nuevo Gestor</button>
                 </div>
             </div>
 
             <div class="kpi-grid">
-                <div class="card">
-                    <div class="kpi-title">Total Gestores Activos</div>
-                    <div class="kpi-number" id="kpi-total">0</div>
-                </div>
-                <div class="card">
-                    <div class="kpi-title">Puntos Totales (PI)</div>
-                    <div class="kpi-number" id="kpi-puntos" style="color: var(--primary);">0</div>
-                </div>
-                <div class="card">
-                    <div class="kpi-title">Top Innovador</div>
-                    <div class="kpi-number" id="kpi-lider" style="font-size: 24px; color: var(--accent);">---</div>
-                </div>
+                <div class="card"><div class="kpi-title">Gestores Activos</div><div class="kpi-number" id="kpi-total">0</div></div>
+                <div class="card"><div class="kpi-title">Puntos Totales</div><div class="kpi-number" id="kpi-puntos" style="color:var(--primary);">0</div></div>
+                <div class="card"><div class="kpi-title">Top Innovador</div><div class="kpi-number" id="kpi-lider" style="font-size:24px; color:var(--accent);">---</div></div>
             </div>
 
             <div class="charts-section">
-                <div class="chart-box">
-                    <div class="chart-header">🏆 Ranking Global (Puntos PI)</div>
-                    <div id="chart-points"></div>
-                </div>
-                <div class="chart-box">
-                    <div class="chart-header" id="chart-header-ideas">💡 Ideas Propias Implementadas</div>
-                    <div id="chart-ideas"></div> 
-                </div>
+                <div class="chart-box"><div class="chart-header">🏆 Ranking Global</div><div id="chart-points"></div></div>
+                <div class="chart-box"><div class="chart-header" id="chart-header-ideas">💡 Ideas</div><div id="chart-ideas"></div></div>
             </div>
 
             <div class="table-box">
                 <div class="table-header-row">
-                    <div class="table-title">Directorio y Desglose</div>
-                    <div class="search-container">
-                        <input type="text" id="input-search" placeholder="🔍 Buscar por nombre o ID..." onkeyup="renderizar()">
-                    </div>
+                    <div class="table-title">Directorio</div>
+                    <div class="search-container"><input type="text" id="input-search" placeholder="🔍 Buscar..." onkeyup="renderizar()"></div>
                 </div>
-                <table id="main-table">
-                    <thead><tr id="table-head-row"></tr></thead>
-                    <tbody id="table-body"></tbody>
-                </table>
+                <table id="main-table"><thead><tr id="table-head-row"></tr></thead><tbody id="table-body"></tbody></table>
             </div>
-
-            <div class="footer" style="margin-top:40px; text-align:center; color:#94a3b8; font-size:12px; padding:20px; border-top:1px solid #e2e8f0;">
-                Sistema de Puntos 2026 - Uso Interno Exclusivo
-            </div>
-
+            <div class="footer" style="margin-top:40px; text-align:center; color:#94a3b8; font-size:12px;">Sistema conectado a Google Sheets</div>
         </div>
     </div>
 
     <div class="modal-overlay" id="modal">
         <div class="modal-content">
-            <h2 id="modal-title" style="margin-top: 0; margin-bottom: 20px; color: var(--secondary);">Registro y Cálculo de Puntos</h2>
-            <form id="form-gestor" onsubmit="guardarDatoLocal(event)" oninput="calcularTotalEnVivo()">
+            <h2 id="modal-title" style="margin-top:0; color:var(--secondary);">Gestión de Empleado</h2>
+            <form id="form-gestor" onsubmit="guardarGestor(event)" oninput="calcularTotalEnVivo()">
                 <div class="form-grid">
-                    <div>
-                        <label class="form-label">ID Empleado</label>
-                        <input type="text" id="input-id" class="form-input" placeholder="Ej: 1045" required>
-                    </div>
-                    <div>
-                        <label class="form-label">Nombre del Colaborador</label>
-                        <input type="text" id="input-nombre" class="form-input" placeholder="Nombre completo" required>
-                    </div>
+                    <div><label class="form-label">ID Empleado</label><input type="text" id="input-id" class="form-input" required></div>
+                    <div><label class="form-label">Nombre</label><input type="text" id="input-nombre" class="form-input" required></div>
                     <div class="form-full">
-                        <label class="form-label">Dirección / Departamento</label>
+                        <label class="form-label">Departamento</label>
                         <select id="input-depto" class="form-input" onchange="verificarOtroDepto()">
-                            <option value="">Seleccione una opción...</option>
-                            <optgroup label="DIRECCIONES">
-                                <option value="Dirección Jurídica">Dirección Jurídica</option>
-                                <option value="Dirección de Planificación y Desarrollo">Dirección de Planificación y Desarrollo</option>
-                                <option value="Dirección de Gestión Humana">Dirección de Gestión Humana</option>
-                                <option value="Dirección de Comunicaciones">Dirección de Comunicaciones</option>
-                                <option value="Dirección de TI y Comunicaciones">Dirección de TI y Comunicaciones</option>
-                                <option value="Dirección de Administración y Finanzas">Dirección de Administración y Finanzas</option>
-                                <option value="Dirección de Formación Profesional">Dirección de Formación Profesional</option>
-                                <option value="Dirección de Competitividad Empresarial">Dirección de Competitividad Empresarial</option>
-                                <option value="Dirección de Rectoría y Regulación de Centros">Dirección de Rectoría y Regulación de Centros</option>
-                                <option value="Dirección de Innovación y Desarrollo">Dirección de Innovación y Desarrollo</option>
-                                <option value="Dirección de Monitoreo, Proyectos y Convenios">Dirección de Monitoreo, Proyectos y Convenios</option>
-                                <option value="Dirección Regional Metropolitana">Dirección Regional Metropolitana</option>
-                                <option value="Dirección Regional Oriental">Dirección Regional Oriental</option>
-                                <option value="Dirección Regional Cibao Norte">Dirección Regional Cibao Norte</option>
-                                <option value="Dirección Regional Cibao Sur">Dirección Regional Cibao Sur</option>
-                                <option value="Dirección Regional Este">Dirección Regional Este</option>
-                                <option value="Dirección Regional Sur">Dirección Regional Sur</option>
-                            </optgroup>
-                            <optgroup label="DEPARTAMENTOS">
-                                <option value="Departamento de Documentos Legales">Departamento de Documentos Legales</option>
-                                <option value="Departamento de Planes y Proyectos">Departamento de Planes y Proyectos</option>
-                                <option value="Departamento de Organización del Trabajo">Departamento de Organización del Trabajo</option>
-                                <option value="Departamento de Mercadeo">Departamento de Mercadeo</option>
-                                <option value="Departamento de Administración de Servicios TIC">Departamento de Administración de Servicios TIC</option>
-                                <option value="Departamento de Contabilidad">Departamento de Contabilidad</option>
-                                <option value="Departamento de Desarrollo Curricular">Departamento de Desarrollo Curricular</option>
-                                <option value="Departamento de Validación y Homologación">Departamento de Validación y Homologación</option>
-                                <option value="Departamento de Estrategias Empresariales">Departamento de Estrategias Empresariales</option>
-                                <option value="Departamento de Concursos">Departamento de Concursos</option>
-                                <option value="Departamento de Litigios">Departamento de Litigios</option>
-                                <option value="Departamento de Investigación">Departamento de Investigación</option>
-                                <option value="Departamento de Reclutamiento y Selección">Departamento de Reclutamiento y Selección</option>
-                                <option value="Departamento de Prensa y Relaciones Públicas">Departamento de Prensa y Relaciones Públicas</option>
-                                <option value="Departamento de Desarrollo e Implementación de Sistemas">Departamento de Desarrollo e Implementación de Sistemas</option>
-                                <option value="Departamento de Tesorería">Departamento de Tesorería</option>
-                                <option value="Departamento de Evaluación y Acreditación">Departamento de Evaluación y Acreditación</option>
-                                <option value="Departamento de Admisión y Empleo">Departamento de Admisión y Empleo</option>
-                                <option value="Departamento de Formación y Programas">Departamento de Formación y Programas</option>
-                                <option value="Departamento de Acreditación de Centros">Departamento de Acreditación de Centros</option>
-                                <option value="Departamento de Desarrollo Institucional">Departamento de Desarrollo Institucional</option>
-                                <option value="Departamento de Capacitación y ED">Departamento de Capacitación y ED</option>
-                                <option value="Departamento de Operaciones TIC">Departamento de Operaciones TIC</option>
-                                <option value="Departamento de Servicios Generales">Departamento de Servicios Generales</option>
-                                <option value="Departamento de Investigación y Producción Didáctica">Departamento de Investigación y Producción Didáctica</option>
-                                <option value="Departamento de Fiscalización de Centros">Departamento de Fiscalización de Centros</option>
-                                <option value="Departamento de Compensación">Departamento de Compensación</option>
-                                <option value="Departamento de Seguridad y Monitoreo TIC">Departamento de Seguridad y Monitoreo TIC</option>
-                                <option value="Departamento de Compras y Contrataciones">Departamento de Compras y Contrataciones</option>
-                                <option value="Departamento de Ingresos">Departamento de Ingresos</option>
-                                <option value="Departamento de Seguridad">Departamento de Seguridad</option>
-                                <option value="Departamento de Investigación Aplicada a la Innovación">Departamento de Investigación Aplicada a la Innovación</option>
-                            </optgroup>
-                            <option value="OTRO" style="font-weight: bold; color: var(--primary);">OTRO (Especifique Manualmente)</option>
+                            <option value="">Seleccionar...</option>
+                            <option value="Dirección TI">Dirección TI</option>
+                            <option value="RRHH">RRHH</option>
+                            <option value="Innovación">Innovación</option>
+                            <option value="OTRO" style="font-weight:bold; color:blue;">OTRO (Escribir manual)</option>
                         </select>
-                        <div id="div-otro-depto" style="display: none; margin-top: 10px;">
-                            <label class="form-label" style="font-size: 12px; color: var(--primary);">Especifique el nombre del área:</label>
-                            <input type="text" id="input-otro-depto" class="form-input" placeholder="Escriba el nombre aquí...">
-                        </div>
+                        <input type="text" id="input-otro-depto" class="form-input" style="display:none; margin-top:5px;" placeholder="Especifique el área...">
                     </div>
-                    <div class="form-full" style="border-top: 1px solid #e2e8f0; margin-top: 10px; padding-top: 10px;">
-                        <label class="form-label" style="color: var(--primary);">ASIGNACIÓN DE PUNTOS (Actividades Dinámicas)</label>
-                    </div>
+                    <div class="form-full" style="border-top:1px solid #eee; margin-top:10px; padding-top:10px; font-weight:bold; color:var(--primary);">Actividades</div>
                     <div id="dynamic-form-fields" class="form-full"></div>
-                    <div class="total-preview">
-                        Total Calculado: <span id="preview-total">0</span> PI
-                    </div>
+                    <div class="total-preview">Total: <span id="preview-total">0</span> PI</div>
                     <div class="btn-group">
                         <button type="button" class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
-                        <button type="submit" class="btn-save" id="btn-save-text">Guardar Registro</button>
+                        <button type="submit" class="btn-save" id="btn-save-text">Guardar</button>
                     </div>
                 </div>
             </form>
@@ -298,13 +141,12 @@
     </div>
 
     <div class="modal-overlay" id="modal-config">
-        <div class="modal-content" style="max-width: 700px;">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h2 style="margin-top: 0; color: var(--secondary);">⚙️ Configuración de Normativa</h2>
-                <button type="button" class="btn-main" onclick="agregarActividadConfig()" style="font-size: 12px; padding: 8px 15px;">+ Agregar Actividad</button>
+        <div class="modal-content" style="max-width:700px;">
+            <div style="display:flex; justify-content:space-between;">
+                <h2 style="margin:0;">⚙️ Configuración</h2>
+                <button type="button" class="btn-main" onclick="agregarActividadConfig()" style="font-size:12px;">+ Agregar</button>
             </div>
-            <p style="font-size: 13px; color: #64748b; margin-bottom: 20px;">Gestione las actividades. Use la barra lateral para ver más si hay muchas.</p>
-            <form onsubmit="guardarConfig(event)">
+            <form onsubmit="guardarConfigRemoto(event)">
                 <div class="config-scroll-area" id="config-items-container"></div>
                 <div class="btn-group">
                     <button type="button" class="btn-cancel" onclick="cerrarConfig()">Cancelar</button>
@@ -316,402 +158,312 @@
 
     <script>
         // ==========================================
-        // 🔒 ÁREA DE SEGURIDAD (CONEXIÓN GOOGLE)
+        // 🔗 URL DE TU SCRIPT DE GOOGLE
         // ==========================================
-        
-        // URL ACTUALIZADA Y CORREGIDA
-        const URL_GOOGLE = "https://script.google.com/macros/s/AKfycbzi0-cNYpGBMHYoY0KiSgN2eDufl3yaT7mLPh8xTpioUAXDXvlfVREYduZafUZiO-it/exec";
-        
-        // ======================================
+        const URL_GOOGLE = "https://script.google.com/macros/s/AKfycbyIOmYwLepD1NT9NisyM6GCPW1UIn_vljL_uiZTAkAJUbOZrd78-z74ggfiwHN0cAJB/exec"; 
 
+        // Variables Globales
+        let datos = [];
+        let configNormativa = [];
+        let indiceEdicion = -1;
+
+        // --- CONEXIÓN: LOGIN ---
         function iniciarSesion() {
             const user = document.getElementById('user-input').value;
             const pass = document.getElementById('pass-input').value;
-            const btn = document.getElementById('btn-login');
-            const msg = document.getElementById('msg-error');
-
-            if (!user || !pass) {
-                msg.textContent = "Por favor completa todos los campos";
-                return;
-            }
-
-            btn.textContent = "Validando...";
-            btn.disabled = true;
-            msg.textContent = "";
-
-            // Conexión con Google Sheets
-            // NOTA: Usamos text/plain para evitar errores de CORS con Google Apps Script
+            if(!URL_GOOGLE.includes("script.google.com")) { alert("Falta configurar la URL del script."); return; }
+            
+            mostrarLoader("Validando credenciales...");
+            
             fetch(URL_GOOGLE, {
                 method: 'POST',
-                headers: {
-                    "Content-Type": "text/plain;charset=utf-8",
-                },
-                body: JSON.stringify({ usuario: user, pass: pass })
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ accion: "login", usuario: user, pass: pass })
             })
-            .then(res => res.json())
-            .then(data => {
-                if (data.validado) {
-                    // Éxito: Ocultar login, mostrar sistema
+            .then(r => r.json())
+            .then(res => {
+                if(res.validado) {
                     document.getElementById('login-screen').style.display = 'none';
                     document.getElementById('sistema-principal').style.display = 'block';
-                    
-                    if(document.getElementById('nombre-tecnico')) {
-                        document.getElementById('nombre-tecnico').textContent = "Bienvenido, " + data.nombre;
-                    }
-                    // Forzar un renderizado por si acaso
-                    renderizar();
+                    document.getElementById('nombre-tecnico').textContent = "Bienvenido " + res.nombre;
+                    cargarDatosDelServidor(); // CARGAR DATOS REALES
                 } else {
-                    // Error credenciales
-                    msg.textContent = "Usuario o contraseña incorrectos";
-                    btn.textContent = "INGRESAR";
-                    btn.disabled = false;
+                    ocultarLoader();
+                    document.getElementById('msg-error').textContent = "Credenciales incorrectas.";
                 }
             })
-            .catch(error => {
-                console.error(error);
-                // Mostrar alerta visible para el usuario si falla la conexión
-                alert("Error de conexión:\nNo se pudo conectar con Google Sheets.\n\nVerifica:\n1. Que tienes internet.\n2. Que publicaste el script como 'Cualquier usuario' (Anyone).");
-                msg.textContent = "Error de conexión con la base de datos.";
-                btn.textContent = "INGRESAR";
-                btn.disabled = false;
+            .catch(e => { ocultarLoader(); alert("Error de conexión: " + e); });
+        }
+
+        // --- CONEXIÓN: CARGAR TODO ---
+        function cargarDatosDelServidor() {
+            mostrarLoader("Descargando base de datos...");
+            fetch(URL_GOOGLE, {
+                method: 'POST',
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ accion: "leer_todo" })
+            })
+            .then(r => r.json())
+            .then(res => {
+                datos = res.gestores;
+                configNormativa = res.config;
+                
+                // Recalcular puntos
+                datos.forEach(d => d.points = calcularPuntos(d.valores));
+                
+                renderizar();
+                ocultarLoader();
+            })
+            .catch(e => { ocultarLoader(); alert("Error cargando datos: " + e); });
+        }
+
+        // --- CONEXIÓN: GUARDAR GESTOR ---
+        function guardarGestor(e) {
+            e.preventDefault();
+            const idInput = document.getElementById('input-id').value;
+            let depto = document.getElementById('input-depto').value;
+            if (depto === 'OTRO') depto = document.getElementById('input-otro-depto').value.trim();
+
+            let valores = {};
+            configNormativa.forEach(item => {
+                const el = document.getElementById(`field_${item.id}`);
+                valores[item.id] = item.tipo === 'check' ? el.checked : (parseInt(el.value)||0);
+            });
+
+            // Si es nuevo, verificar ID localmente antes de enviar
+            if (indiceEdicion === -1 && datos.find(d => d.id == idInput)) {
+                alert("Error: El ID ya existe."); return;
+            }
+
+            let estado = true;
+            if(indiceEdicion !== -1) estado = datos[indiceEdicion].activo;
+
+            const gestorObj = { id: idInput, name: document.getElementById('input-nombre').value, depto: depto, valores: valores, activo: estado };
+
+            mostrarLoader("Guardando en la nube...");
+            fetch(URL_GOOGLE, {
+                method: 'POST',
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ accion: "guardar_gestor", gestor: gestorObj })
+            })
+            .then(r => r.json())
+            .then(res => {
+                if(res.exito) {
+                    cerrarModal();
+                    cargarDatosDelServidor(); // Recargar para asegurar sincronicidad
+                }
             });
         }
 
-        // ==========================================
-        // ⚙️ LÓGICA DEL PROGRAMA (INTACTA)
-        // ==========================================
-        
-        let configNormativa = [
-            { id: 'act_1', nombre: "Programa de Formación", tipo: 'check', valor: 400 },
-            { id: 'act_2', nombre: "Por Taller Asistido", tipo: 'number', valor: 200 },
-            { id: 'act_3', nombre: "Por Acompañamiento", tipo: 'number', valor: 150 },
-            { id: 'act_4', nombre: "Por Idea Propia", tipo: 'number', valor: 400 },
-            { id: 'act_5', nombre: "Por Evento Anual", tipo: 'check', valor: 500 }
-        ];
-        
-        // Datos iniciales
-        let datos = [
-            { id: "1045", name: "Jorge Tonos", depto: "Dirección de TI y Comunicaciones", valores: { 'act_1': true, 'act_2': 3, 'act_3': 2, 'act_4': 2, 'act_5': true }, points: 0, activo: true },
-            { id: "2033", name: "Iris Cesa", depto: "Dirección de Gestión Humana", valores: { 'act_1': true, 'act_2': 2, 'act_3': 1, 'act_4': 1, 'act_5': false }, points: 0, activo: true },
-            { id: "3012", name: "Rosanny Contreras", depto: "Departamento de Operaciones TIC", valores: { 'act_1': true, 'act_2': 3, 'act_3': 4, 'act_4': 0, 'act_5': true }, points: 0, activo: true }
-        ];
-        
-        let indiceEdicion = -1;
+        // --- CONEXIÓN: ELIMINAR ---
+        function eliminarGestor(index) {
+            if(!confirm("¿Seguro que deseas eliminar este registro de la base de datos?")) return;
+            const idEliminar = datos[index].id;
+            
+            mostrarLoader("Eliminando...");
+            fetch(URL_GOOGLE, {
+                method: 'POST',
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ accion: "eliminar_gestor", id: idEliminar })
+            })
+            .then(r => r.json())
+            .then(res => {
+                if(res.exito) cargarDatosDelServidor();
+            });
+        }
 
-        function calcularPuntos(gestorValores) {
+        // --- CONEXIÓN: INACTIVAR/ACTIVAR ---
+        function toggleEstado(index) {
+            const idTarget = datos[index].id;
+            mostrarLoader("Actualizando estado...");
+            fetch(URL_GOOGLE, {
+                method: 'POST',
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ accion: "toggle_estado", id: idTarget })
+            })
+            .then(r => r.json())
+            .then(res => {
+                if(res.exito) cargarDatosDelServidor();
+            });
+        }
+
+        // --- CONEXIÓN: GUARDAR CONFIG ---
+        function guardarConfigRemoto(e) {
+            e.preventDefault();
+            mostrarLoader("Actualizando configuración...");
+            // configNormativa ya se actualizó en tiempo real en los inputs, solo enviamos
+            fetch(URL_GOOGLE, {
+                method: 'POST',
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ accion: "guardar_config", config: configNormativa })
+            })
+            .then(r => r.json())
+            .then(res => {
+                if(res.exito) { cerrarConfig(); cargarDatosDelServidor(); }
+            });
+        }
+
+        // --- FUNCIONES AUXILIARES (Lógica Visual) ---
+        function mostrarLoader(txt) { document.getElementById('loader-overlay').style.display='flex'; document.getElementById('loader-text').textContent = txt; }
+        function ocultarLoader() { document.getElementById('loader-overlay').style.display='none'; }
+
+        function calcularPuntos(vals) {
             let total = 0;
-            configNormativa.forEach(item => {
-                const val = gestorValores[item.id];
-                if (item.tipo === 'check') {
-                    if (val === true || val === 'true') total += item.valor;
-                } else {
-                    total += (parseInt(val) || 0) * item.valor;
-                }
+            configNormativa.forEach(c => {
+                const v = vals[c.id];
+                if(c.tipo === 'check') { if(v === true || v === 'true') total += c.valor; }
+                else { total += (parseInt(v)||0) * c.valor; }
             });
             return total;
         }
 
         function renderizar() {
-            const termino = document.getElementById('input-search') ? document.getElementById('input-search').value.toLowerCase() : "";
+            const term = document.getElementById('input-search').value.toLowerCase();
+            const activos = datos.filter(d => d.activo);
             
-            datos.forEach(d => {
-                if(!d.valores) d.valores = {};
-                if(d.activo === undefined) d.activo = true; 
-                d.points = calcularPuntos(d.valores);
-            });
-            
-            datos.sort((a, b) => b.points - a.points);
+            // KPIs
+            document.getElementById('kpi-total').textContent = activos.length;
+            document.getElementById('kpi-puntos').textContent = activos.reduce((s, d) => s + d.points, 0).toLocaleString();
+            document.getElementById('kpi-lider').textContent = activos.length > 0 ? activos.sort((a,b)=>b.points-a.points)[0].name : "---";
 
-            const datosFiltrados = datos.filter(d => 
-                d.name.toLowerCase().includes(termino) || 
-                d.id.includes(termino) ||
-                d.depto.toLowerCase().includes(termino)
-            );
+            // Gráficas
+            renderCharts(activos);
 
-            // KPIs y Gráficas (Solo activos)
-            const datosActivos = datos.filter(d => d.activo !== false);
-            
-            document.getElementById('kpi-total').textContent = datosActivos.length;
-            const totalGlobal = datosActivos.reduce((sum, item) => sum + item.points, 0);
-            document.getElementById('kpi-puntos').textContent = totalGlobal.toLocaleString();
-            document.getElementById('kpi-lider').textContent = datosActivos.length > 0 ? datosActivos[0].name : "---";
+            // Tabla
+            const thead = document.getElementById('table-head-row');
+            let ths = `<th>ID</th><th>Nombre</th><th>Depto</th>`;
+            configNormativa.forEach(c => ths += `<th style="text-align:center">${c.nombre.substring(0,10)}</th>`);
+            ths += `<th>Total</th><th style="text-align:center">Acciones</th>`;
+            thead.innerHTML = ths;
 
-            // Gráfica 1
-            const chartPoints = document.getElementById('chart-points');
-            if(chartPoints) {
-                chartPoints.innerHTML = "";
-                const maxPoints = Math.max(...datosActivos.map(d => d.points)) || 100;
-                datosActivos.slice(0, 10).forEach(d => {
-                    const percent = (d.points / maxPoints) * 100;
-                    chartPoints.innerHTML += `
-                        <div class="bar-container">
-                            <div class="bar-name">${d.name}</div>
-                            <div class="bar-bg">
-                                <div class="bar-fill" style="width: ${percent}%; background-color: var(--primary);">
-                                    ${d.points}
-                                </div>
-                            </div>
-                        </div>`;
-                });
-            }
-
-            // Gráfica 2
-            const chartIdeas = document.getElementById('chart-ideas');
-            if(chartIdeas) {
-                chartIdeas.innerHTML = "";
-                const ideaActivity = configNormativa.find(c => c.nombre.includes("Idea")) || configNormativa.find(c => c.tipo === 'number');
-                if (ideaActivity) {
-                    document.getElementById('chart-header-ideas').textContent = `💡 ${ideaActivity.nombre}`;
-                    const maxVal = Math.max(...datosActivos.map(d => parseInt(d.valores[ideaActivity.id]) || 0)) || 5;
-                    datosActivos.slice(0, 10).forEach(d => {
-                        const val = parseInt(d.valores[ideaActivity.id]) || 0;
-                        const percent = (val / maxVal) * 100;
-                        if(val >= 0) {
-                            chartIdeas.innerHTML += `
-                                <div class="bar-container">
-                                    <div class="bar-name">${d.name}</div>
-                                    <div class="bar-bg">
-                                        <div class="bar-fill" style="width: ${percent}%; background-color: var(--accent);">
-                                             ${val}
-                                        </div>
-                                    </div>
-                                </div>`;
-                        }
-                    });
-                } else {
-                    chartIdeas.innerHTML = "<p style='color:#999; font-size:12px; text-align:center;'>No se encontró actividad de 'Ideas' configurada.</p>";
-                }
-            }
-
-            // TABLA Headers
-            const theadRow = document.getElementById('table-head-row');
-            if(theadRow) {
-                let headersHTML = `<th>ID</th><th>Nombre</th><th>Depto</th>`;
-                configNormativa.forEach(item => {
-                    let shortName = item.nombre.length > 10 ? item.nombre.substring(0, 8) + '.' : item.nombre;
-                    headersHTML += `<th title="${item.nombre}" style="text-align: center;">${shortName}</th>`;
-                });
-                headersHTML += `<th>Total PI</th><th style="text-align: center;">Acciones</th>`;
-                theadRow.innerHTML = headersHTML;
-            }
-
-            // TABLA Filas
             const tbody = document.getElementById('table-body');
-            if(tbody) {
-                tbody.innerHTML = "";
-                if (datosFiltrados.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="${5 + configNormativa.length}" style="text-align:center; padding: 20px; color: #94a3b8;">No se encontraron resultados</td></tr>`;
-                } else {
-                    datosFiltrados.forEach((d) => {
-                        const indexOriginal = datos.findIndex(item => item.id === d.id);
-                        const isInactivo = d.activo === false;
-                        const rowClass = isInactivo ? 'class="tr-inactive"' : '';
-                        const iconToggle = isInactivo ? '▶️' : '⏸️';
-                        const titleToggle = isInactivo ? 'Reactivar' : 'Inactivar';
-                        
-                        let rowHTML = `
-                            <tr ${rowClass}>
-                                <td><span class="id-cell">${d.id}</span></td>
-                                <td style="font-weight: 600;">${d.name} ${isInactivo ? '(Inactivo)' : ''}</td>
-                                <td><span class="badge" title="${d.depto}">${d.depto}</span></td>
-                        `;
+            tbody.innerHTML = "";
+            
+            const filtrados = datos.filter(d => d.name.toLowerCase().includes(term) || String(d.id).includes(term));
+            
+            filtrados.forEach((d) => {
+                const idx = datos.indexOf(d);
+                const inactiveClass = !d.activo ? 'tr-inactive' : '';
+                let tr = `<tr class="${inactiveClass}">
+                    <td><span class="id-cell">${d.id}</span></td>
+                    <td>${d.name} ${!d.activo ? '(Inactivo)' : ''}</td>
+                    <td><span class="badge">${d.depto}</span></td>`;
+                
+                configNormativa.forEach(c => {
+                    const val = d.valores[c.id];
+                    tr += `<td style="text-align:center">${c.tipo==='check' ? (val?'✅':'-') : (val||'-')}</td>`;
+                });
 
-                        configNormativa.forEach(item => {
-                            const val = d.valores[item.id];
-                            let displayVal = '-';
-                            if (item.tipo === 'check') { displayVal = val ? '✅' : '-'; } 
-                            else { displayVal = val > 0 ? val : '-'; }
-                            rowHTML += `<td style="text-align: center;">${displayVal}</td>`;
-                        });
-                        
-                        rowHTML += `
-                                <td style="color: var(--primary); font-weight: 800;">${d.points}</td>
-                                <td style="text-align: center;">
-                                    <div class="btn-group-action">
-                                        <button class="btn-icon btn-edit" onclick="cargarEdicion(${indexOriginal})" title="Modificar">✏️</button>
-                                        <button class="btn-icon btn-toggle" onclick="toggleEstado(${indexOriginal})" title="${titleToggle}">${iconToggle}</button>
-                                        <button class="btn-icon btn-delete" onclick="eliminarGestor(${indexOriginal})" title="Eliminar">🗑️</button>
-                                    </div>
-                                </td>
-                            </tr>
-                        `;
-                        tbody.innerHTML += rowHTML;
-                    });
-                }
-            }
-        }
-
-        // --- GESTIÓN DE CONFIGURACIÓN ---
-        function abrirConfig() { renderConfigItems(); document.getElementById('modal-config').style.display = 'flex'; }
-        function cerrarConfig() { document.getElementById('modal-config').style.display = 'none'; }
-
-        function renderConfigItems() {
-            const container = document.getElementById('config-items-container');
-            container.innerHTML = '';
-            configNormativa.forEach((item, index) => {
-                container.innerHTML += `
-                    <div class="config-row">
-                        <div class="config-col-name">
-                            <label class="form-label" style="font-size:11px">Nombre Actividad</label>
-                            <input type="text" class="form-input" value="${item.nombre}" onchange="actualizarConfigTemp(${index}, 'nombre', this.value)">
+                tr += `<td style="font-weight:bold; color:var(--primary)">${d.points}</td>
+                    <td style="text-align:center">
+                        <div class="btn-group-action">
+                            <button class="btn-icon btn-edit" onclick="cargarEdicion(${idx})">✏️</button>
+                            <button class="btn-icon btn-toggle" onclick="toggleEstado(${idx})">${d.activo?'⏸️':'▶️'}</button>
+                            <button class="btn-icon btn-delete" onclick="eliminarGestor(${idx})">🗑️</button>
                         </div>
-                        <div class="config-col-type">
-                            <label class="form-label" style="font-size:11px">Tipo</label>
-                            <select class="form-input" onchange="actualizarConfigTemp(${index}, 'tipo', this.value)">
-                                <option value="check" ${item.tipo === 'check' ? 'selected' : ''}>Si/No</option>
-                                <option value="number" ${item.tipo === 'number' ? 'selected' : ''}>Cantidad</option>
-                            </select>
-                        </div>
-                        <div class="config-col-points">
-                            <label class="form-label" style="font-size:11px">Puntos</label>
-                            <input type="number" class="form-input" value="${item.valor}" onchange="actualizarConfigTemp(${index}, 'valor', this.value)">
-                        </div>
-                        <button type="button" class="btn-delete-item" onclick="eliminarActividadConfig(${index})" title="Eliminar">&times;</button>
-                    </div>`;
+                    </td></tr>`;
+                tbody.innerHTML += tr;
             });
         }
 
-        function agregarActividadConfig() {
-            configNormativa.push({ id: 'act_' + Date.now(), nombre: "Nueva Actividad", tipo: 'number', valor: 0 });
-            renderConfigItems(); 
-        }
-        function eliminarActividadConfig(index) {
-            if(confirm("¿Eliminar actividad?")) { configNormativa.splice(index, 1); renderConfigItems(); }
-        }
-        function actualizarConfigTemp(index, field, value) {
-            if (field === 'valor') value = parseInt(value) || 0;
-            configNormativa[index][field] = value;
-        }
-        function guardarConfig(e) {
-            e.preventDefault(); renderizar(); cerrarConfig(); alert("¡Configuración actualizada!");
-        }
-
-        // --- FORMULARIO Y EDICIÓN ---
-        function renderFormFields(valoresActuales = {}) {
-            const container = document.getElementById('dynamic-form-fields');
-            container.innerHTML = '';
-            configNormativa.forEach(item => {
-                const val = valoresActuales[item.id]; 
-                let html = `<div style="margin-bottom: 12px;">`;
-                if (item.tipo === 'check') {
-                    const checked = (val === true || val === 'true') ? 'checked' : '';
-                    html += `<label class="checkbox-wrapper"><input type="checkbox" id="field_${item.id}" onchange="calcularTotalEnVivo()" ${checked}><span>${item.nombre} <strong style="color:var(--primary)">(+${item.valor} PI)</strong></span></label>`;
-                } else {
-                    const numVal = val || '';
-                    html += `<label class="form-label">${item.nombre}</label><input type="number" id="field_${item.id}" class="form-input" placeholder="0" min="0" value="${numVal}" oninput="calcularTotalEnVivo()"><span class="hint">* ${item.valor} PI por unidad</span>`;
-                }
-                html += `</div>`;
-                container.innerHTML += html;
+        function renderCharts(activos) {
+            // Chart 1
+            const c1 = document.getElementById('chart-points'); c1.innerHTML="";
+            const max = Math.max(...activos.map(d=>d.points)) || 100;
+            activos.slice(0,10).forEach(d => {
+                c1.innerHTML += `<div class="bar-container"><div class="bar-name">${d.name}</div><div class="bar-bg"><div class="bar-fill" style="width:${(d.points/max)*100}%; background:var(--primary)">${d.points}</div></div></div>`;
             });
-        }
-
-        function verificarOtroDepto() {
-            const select = document.getElementById('input-depto');
-            const divOtro = document.getElementById('div-otro-depto');
-            const inputOtro = document.getElementById('input-otro-depto');
-            if (select.value === 'OTRO') {
-                divOtro.style.display = 'block'; inputOtro.setAttribute('required', 'true');
-            } else {
-                divOtro.style.display = 'none'; inputOtro.removeAttribute('required'); inputOtro.value = ''; 
+            // Chart 2 (Buscar primera actividad numérica)
+            const c2 = document.getElementById('chart-ideas'); c2.innerHTML="";
+            const actIdea = configNormativa.find(c => c.tipo === 'number');
+            if(actIdea) {
+                document.getElementById('chart-header-ideas').textContent = "💡 " + actIdea.nombre;
+                const max2 = Math.max(...activos.map(d=>parseInt(d.valores[actIdea.id])||0)) || 1;
+                activos.slice(0,10).forEach(d => {
+                    const val = parseInt(d.valores[actIdea.id])||0;
+                    c2.innerHTML += `<div class="bar-container"><div class="bar-name">${d.name}</div><div class="bar-bg"><div class="bar-fill" style="width:${(val/max2)*100}%; background:var(--accent)">${val}</div></div></div>`;
+                });
             }
         }
 
-        function abrirModal() { 
+        // --- GESTIÓN FORMULARIO ---
+        function abrirModal() {
             indiceEdicion = -1;
             document.getElementById('form-gestor').reset();
-            verificarOtroDepto(); 
+            document.getElementById('input-id').disabled = false;
+            verificarOtroDepto();
             renderFormFields({});
-            document.getElementById('modal-title').textContent = "Registrar Nuevo Gestor";
-            document.getElementById('btn-save-text').textContent = "Guardar Registro";
-            document.getElementById('input-id').disabled = false; 
-            document.getElementById('preview-total').textContent = "0";
             document.getElementById('modal').style.display = 'flex';
         }
 
         function cargarEdicion(index) {
-            if (datos[index].activo === false) {
-                alert("El gestor está INACTIVO. Reactívelo primero.");
-                return;
-            }
+            if (!datos[index].activo) { alert("Gestor inactivo. Reactivar primero."); return; }
             indiceEdicion = index;
-            const gestor = datos[index];
-            document.getElementById('input-id').value = gestor.id;
-            document.getElementById('input-nombre').value = gestor.name;
-            const select = document.getElementById('input-depto');
-            let found = false;
-            for(let i=0; i<select.options.length; i++) {
-                if(select.options[i].value === gestor.depto) found = true;
-            }
-            if (found) { select.value = gestor.depto; } 
-            else { select.value = 'OTRO'; document.getElementById('input-otro-depto').value = gestor.depto; }
-            verificarOtroDepto(); 
-            renderFormFields(gestor.valores || {});
-            document.getElementById('modal-title').textContent = "Modificar Datos";
-            document.getElementById('btn-save-text').textContent = "Guardar Cambios";
-            document.getElementById('input-id').disabled = true; 
+            const d = datos[index];
+            document.getElementById('input-id').value = d.id;
+            document.getElementById('input-id').disabled = true;
+            document.getElementById('input-nombre').value = d.name;
+            
+            const sel = document.getElementById('input-depto');
+            let match = false;
+            for(let op of sel.options) if(op.value === d.depto) match = true;
+            if(match) sel.value = d.depto;
+            else { sel.value = 'OTRO'; document.getElementById('input-otro-depto').value = d.depto; }
+            verificarOtroDepto();
+            
+            renderFormFields(d.valores);
             calcularTotalEnVivo();
             document.getElementById('modal').style.display = 'flex';
         }
 
-        function guardarDatoLocal(e) {
-            e.preventDefault();
-            const idInput = document.getElementById('input-id').value;
-            let departamentoFinal = document.getElementById('input-depto').value;
-            if (departamentoFinal === 'OTRO') {
-                departamentoFinal = document.getElementById('input-otro-depto').value.trim();
-                if (!departamentoFinal) { alert("Especifique el departamento."); return; }
-            }
-
-            let nuevosValores = {};
-            configNormativa.forEach(item => {
-                const element = document.getElementById(`field_${item.id}`);
-                if (item.tipo === 'check') nuevosValores[item.id] = element.checked;
-                else nuevosValores[item.id] = parseInt(element.value) || 0;
+        function renderFormFields(vals) {
+            const div = document.getElementById('dynamic-form-fields'); div.innerHTML = "";
+            configNormativa.forEach(c => {
+                let html = `<div style="margin-bottom:10px;">`;
+                if(c.tipo === 'check') {
+                    html += `<label style="display:flex;align-items:center;gap:10px;border:1px solid #eee;padding:10px;border-radius:8px;"><input type="checkbox" id="field_${c.id}" onchange="calcularTotalEnVivo()" ${vals[c.id]?'checked':''}> ${c.nombre} (+${c.valor})</label>`;
+                } else {
+                    html += `<label class="form-label">${c.nombre} (${c.valor} pts/u)</label><input type="number" id="field_${c.id}" class="form-input" value="${vals[c.id]||0}" oninput="calcularTotalEnVivo()">`;
+                }
+                div.innerHTML += html + `</div>`;
             });
+        }
 
-            let estadoActual = true;
-            if (indiceEdicion !== -1) estadoActual = datos[indiceEdicion].activo;
-
-            const gestorFormulario = {
-                id: idInput, name: document.getElementById('input-nombre').value,
-                depto: departamentoFinal, valores: nuevosValores, points: 0, activo: estadoActual
-            };
-
-            if (indiceEdicion === -1) {
-                if(datos.find(d => d.id === idInput)) { alert("ID ya existe."); return; }
-                datos.push(gestorFormulario);
-            } else {
-                datos[indiceEdicion] = gestorFormulario;
-            }
-            renderizar();
-            cerrarModal();
+        function verificarOtroDepto() {
+            const isOtro = document.getElementById('input-depto').value === 'OTRO';
+            document.getElementById('input-otro-depto').style.display = isOtro ? 'block' : 'none';
+            document.getElementById('input-otro-depto').required = isOtro;
         }
 
         function calcularTotalEnVivo() {
-            let tempValores = {};
-            configNormativa.forEach(item => {
-                const element = document.getElementById(`field_${item.id}`);
-                if (element) {
-                    if (item.tipo === 'check') tempValores[item.id] = element.checked;
-                    else tempValores[item.id] = parseInt(element.value) || 0;
-                }
+            let temp = {};
+            configNormativa.forEach(c => {
+                const el = document.getElementById(`field_${c.id}`);
+                temp[c.id] = c.tipo==='check' ? el.checked : (parseInt(el.value)||0);
             });
-            document.getElementById('preview-total').textContent = calcularPuntos(tempValores).toLocaleString();
+            document.getElementById('preview-total').textContent = calcularPuntos(temp).toLocaleString();
         }
 
-        function eliminarGestor(index) {
-            if (confirm("¿Eliminar registro?")) { datos.splice(index, 1); renderizar(); }
+        function cerrarModal() { document.getElementById('modal').style.display = 'none'; }
+
+        // --- GESTIÓN CONFIGURACIÓN ---
+        function abrirConfig() { renderConfigItems(); document.getElementById('modal-config').style.display = 'flex'; }
+        function cerrarConfig() { document.getElementById('modal-config').style.display = 'none'; }
+        
+        function renderConfigItems() {
+            const div = document.getElementById('config-items-container'); div.innerHTML = "";
+            configNormativa.forEach((c, idx) => {
+                div.innerHTML += `<div class="config-row">
+                    <div style="flex:2"><label style="font-size:10px">Nombre</label><input class="form-input" value="${c.nombre}" onchange="configNormativa[${idx}].nombre=this.value"></div>
+                    <div style="flex:1"><label style="font-size:10px">Tipo</label><select class="form-input" onchange="configNormativa[${idx}].tipo=this.value"><option value="check" ${c.tipo=='check'?'selected':''}>Check</option><option value="number" ${c.tipo=='number'?'selected':''}>Num</option></select></div>
+                    <div style="flex:1"><label style="font-size:10px">Valor</label><input type="number" class="form-input" value="${c.valor}" onchange="configNormativa[${idx}].valor=parseInt(this.value)"></div>
+                    <button type="button" onclick="eliminarActividadConfig(${idx})" style="color:red;border:none;background:none;font-weight:bold;">X</button>
+                </div>`;
+            });
         }
+        function agregarActividadConfig() { configNormativa.push({id:'act_'+Date.now(), nombre:'Nueva', tipo:'number', valor:100}); renderConfigItems(); }
+        function eliminarActividadConfig(i) { configNormativa.splice(i,1); renderConfigItems(); }
 
-        function toggleEstado(index) {
-            datos[index].activo = !datos[index].activo;
-            renderizar();
-        }
-
-        function cerrarModal() { document.getElementById('modal').style.display = 'none'; indiceEdicion = -1; }
-
-        // Inicializar (renderizado inicial para que cargue en el background)
-        renderizar();
     </script>
 </body>
 </html>
