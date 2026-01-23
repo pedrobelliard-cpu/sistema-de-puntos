@@ -15,6 +15,7 @@
             --card: #ffffff;          
             --danger: #ef4444;
             --edit: #f59e0b;
+            --inactive: #64748b; /* Nuevo color para inactivos */
         }
 
         body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); color: var(--secondary);
@@ -86,7 +87,8 @@
 
         /* TABLA Y BUSCADOR */
         .table-box { background: var(--card);
-            border-radius: 12px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.02); overflow-x: auto; }
+            border-radius: 12px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.02); overflow-x: auto;
+        }
         
         .table-header-row { display: flex;
             justify-content: space-between; align-items: center; padding: 20px 25px; border-bottom: 1px solid #e2e8f0;
@@ -102,7 +104,8 @@
 
         table { width: 100%;
             border-collapse: collapse; text-align: left; min-width: 800px; }
-        th { background: #f8fafc; padding: 18px 25px;
+        th { background: #f8fafc;
+            padding: 18px 25px;
             font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; border-bottom: 1px solid #e2e8f0; white-space: nowrap;
         }
         td { padding: 18px 25px; border-bottom: 1px solid #f1f5f9; color: #334155;
@@ -111,6 +114,14 @@
         }
         tr:hover { background-color: #f8fafc;
         }
+        
+        /* ESTILOS PARA FILA INACTIVA */
+        .tr-inactive {
+            background-color: #f1f5f9 !important;
+            opacity: 0.6;
+            filter: grayscale(100%);
+        }
+
         .badge { background: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 20px;
             font-size: 11px; font-weight: bold; display: inline-block; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle;
         }
@@ -134,6 +145,10 @@
         }
         .btn-delete:hover { background: var(--danger); color: white;
         }
+
+        /* Botón toggle inactivar */
+        .btn-toggle { color: var(--edit); border-color: #fde68a; }
+        .btn-toggle:hover { background: var(--edit); color: white; }
 
         /* FOOTER */
         .footer { margin-top: 40px;
@@ -200,11 +215,16 @@
             padding: 10px;
             border-radius: 8px;
         }
-        .config-row { display: flex; gap: 10px; align-items: flex-end; margin-bottom: 15px; background: #f8fafc; padding: 10px; border-radius: 8px; position: relative;}
-        .config-col-name { flex: 2; }
-        .config-col-type { flex: 1; }
-        .config-col-points { flex: 1; }
-        .btn-delete-item { color: var(--danger); cursor: pointer; border: none; background: transparent; font-size: 16px; margin-bottom: 8px;}
+        .config-row { display: flex; gap: 10px; align-items: flex-end; margin-bottom: 15px; background: #f8fafc;
+            padding: 10px; border-radius: 8px; position: relative;}
+        .config-col-name { flex: 2;
+        }
+        .config-col-type { flex: 1;
+        }
+        .config-col-points { flex: 1;
+        }
+        .btn-delete-item { color: var(--danger); cursor: pointer; border: none; background: transparent; font-size: 16px;
+            margin-bottom: 8px;}
 
         @media print {
             .actions, .btn-group-action, th:last-child, td:last-child, .search-container { display: none !important;
@@ -238,6 +258,7 @@
                     🖨️ Imprimir
                 </button>
                 <button class="btn-main" onclick="abrirModal()">
+                 
                     <span>+</span> Nuevo Gestor
                 </button>
             </div>
@@ -245,16 +266,19 @@
 
         <div class="kpi-grid">
             <div class="card">
-                <div class="kpi-title">Total Gestores</div>
+                <div class="kpi-title">Total Gestores Activos</div>
                 <div class="kpi-number" id="kpi-total">0</div>
+ 
             </div>
             <div class="card">
                 <div class="kpi-title">Puntos Totales (PI)</div>
                 <div class="kpi-number" id="kpi-puntos" style="color: var(--primary);">0</div>
             </div>
             <div class="card">
+            
                 <div class="kpi-title">Top Innovador</div>
-                <div class="kpi-number" id="kpi-lider" style="font-size: 24px; color: var(--accent);">---</div>
+                <div class="kpi-number" id="kpi-lider" style="font-size: 24px;
+                color: var(--accent);">---</div>
             </div>
         </div>
 
@@ -263,6 +287,7 @@
                 <div class="chart-header">🏆 Ranking Global (Puntos PI)</div>
                 <div id="chart-points"></div>
             </div>
+       
             <div class="chart-box">
                 <div class="chart-header" id="chart-header-ideas">💡 Ideas Propias Implementadas</div>
                 <div id="chart-ideas"></div> 
@@ -271,18 +296,21 @@
 
         <div class="table-box">
             <div class="table-header-row">
+             
                 <div class="table-title">Directorio y Desglose</div>
                 <div class="search-container">
                     <input type="text" id="input-search" placeholder="🔍 Buscar por nombre o ID..." onkeyup="renderizar()">
                 </div>
             </div>
             <table id="main-table">
+       
                 <thead>
                     <tr id="table-head-row">
                         </tr>
                 </thead>
                 <tbody id="table-body"></tbody>
             </table>
+ 
         </div>
 
         <div class="footer">
@@ -293,116 +321,149 @@
 
     <div class="modal-overlay" id="modal">
         <div class="modal-content">
-            <h2 id="modal-title" style="margin-top: 0; margin-bottom: 20px; color: var(--secondary);">Registro y Cálculo de Puntos</h2>
+            <h2 id="modal-title" style="margin-top: 0;
+            margin-bottom: 20px; color: var(--secondary);">Registro y Cálculo de Puntos</h2>
             <form id="form-gestor" onsubmit="guardarDatoLocal(event)" oninput="calcularTotalEnVivo()">
                 
                 <div class="form-grid">
                     <div>
-                        <label class="form-label">ID Empleado</label>
+                        <label 
+                        class="form-label">ID Empleado</label>
                         <input type="text" id="input-id" class="form-input" placeholder="Ej: 1045" required>
                     </div>
                     <div>
                         <label class="form-label">Nombre del Colaborador</label>
+  
                         <input type="text" id="input-nombre" class="form-input" placeholder="Nombre completo" required>
                     </div>
 
                     <div class="form-full">
                         <label class="form-label">Dirección / Departamento</label>
+    
                         <select id="input-depto" class="form-input" onchange="verificarOtroDepto()">
                             <option value="">Seleccione una opción...</option>
                             <optgroup label="DIRECCIONES">
+                 
                                 <option value="Dirección Jurídica">Dirección Jurídica</option>
                                 <option value="Dirección de Planificación y Desarrollo">Dirección de Planificación y Desarrollo</option>
                                 <option value="Dirección de Gestión Humana">Dirección de Gestión Humana</option>
+  
                                 <option value="Dirección de Comunicaciones">Dirección de Comunicaciones</option>
                                 <option value="Dirección de TI y Comunicaciones">Dirección de TI y Comunicaciones</option>
+                        
                                 <option value="Dirección de Administración y Finanzas">Dirección de Administración y Finanzas</option>
                                 <option value="Dirección de Formación Profesional">Dirección de Formación Profesional</option>
                                 <option value="Dirección de Competitividad Empresarial">Dirección de Competitividad Empresarial</option>
+     
                                 <option value="Dirección de Rectoría y Regulación de Centros">Dirección de Rectoría y Regulación de Centros</option>
                                 <option value="Dirección de Innovación y Desarrollo">Dirección de Innovación y Desarrollo</option>
+                   
                                 <option value="Dirección de Monitoreo, Proyectos y Convenios">Dirección de Monitoreo, Proyectos y Convenios</option>
                                 <option value="Dirección Regional Metropolitana">Dirección Regional Metropolitana</option>
                                 <option value="Dirección Regional Oriental">Dirección Regional Oriental</option>
+  
                                 <option value="Dirección Regional Cibao Norte">Dirección Regional Cibao Norte</option>
                                 <option value="Dirección Regional Cibao Sur">Dirección Regional Cibao Sur</option>
+                        
                                 <option value="Dirección Regional Este">Dirección Regional Este</option>
                                 <option value="Dirección Regional Sur">Dirección Regional Sur</option>
                             </optgroup>
+                      
                             <optgroup label="DEPARTAMENTOS">
                                 <option value="Departamento de Documentos Legales">Departamento de Documentos Legales</option>
                                 <option value="Departamento de Planes y Proyectos">Departamento de Planes y Proyectos</option>
+             
                                 <option value="Departamento de Organización del Trabajo">Departamento de Organización del Trabajo</option>
                                 <option value="Departamento de Mercadeo">Departamento de Mercadeo</option>
                                 <option value="Departamento de Administración de Servicios TIC">Departamento de Administración de Servicios TIC</option>
                                 <option value="Departamento de Contabilidad">Departamento de Contabilidad</option>
                                 <option value="Departamento de Desarrollo Curricular">Departamento de Desarrollo Curricular</option>
+                
                                 <option value="Departamento de Validación y Homologación">Departamento de Validación y Homologación</option>
                                 <option value="Departamento de Estrategias Empresariales">Departamento de Estrategias Empresariales</option>
                                 <option value="Departamento de Concursos">Departamento de Concursos</option>
                                 <option value="Departamento de Litigios">Departamento de Litigios</option>
                                 <option value="Departamento de Investigación">Departamento de Investigación</option>
+                         
                                 <option value="Departamento de Reclutamiento y Selección">Departamento de Reclutamiento y Selección</option>
                                 <option value="Departamento de Prensa y Relaciones Públicas">Departamento de Prensa y Relaciones Públicas</option>
                                 <option value="Departamento de Desarrollo e Implementación de Sistemas">Departamento de Desarrollo e Implementación de Sistemas</option>
                                 <option value="Departamento de Tesorería">Departamento de Tesorería</option>
                                 <option value="Departamento de Evaluación y Acreditación">Departamento de Evaluación y Acreditación</option>
+                  
                                 <option value="Departamento de Admisión y Empleo">Departamento de Admisión y Empleo</option>
                                 <option value="Departamento de Formación y Programas">Departamento de Formación y Programas</option>
                                 <option value="Departamento de Acreditación de Centros">Departamento de Acreditación de Centros</option>
                                 <option value="Departamento de Desarrollo Institucional">Departamento de Desarrollo Institucional</option>
                                 <option value="Departamento de Capacitación y ED">Departamento de Capacitación y ED</option>
+               
                                 <option value="Departamento de Operaciones TIC">Departamento de Operaciones TIC</option>
                                 <option value="Departamento de Servicios Generales">Departamento de Servicios Generales</option>
                                 <option value="Departamento de Investigación y Producción Didáctica">Departamento de Investigación y Producción Didáctica</option>
                                 <option value="Departamento de Fiscalización de Centros">Departamento de Fiscalización de Centros</option>
                                 <option value="Departamento de Compensación">Departamento de Compensación</option>
+                
                                 <option value="Departamento de Seguridad y Monitoreo TIC">Departamento de Seguridad y Monitoreo TIC</option>
                                 <option value="Departamento de Compras y Contrataciones">Departamento de Compras y Contrataciones</option>
+                                
                                 <option value="Departamento de Ingresos">Departamento de Ingresos</option>
                                 <option value="Departamento de Seguridad">Departamento de Seguridad</option>
                                 <option value="Departamento de Investigación Aplicada a la Innovación">Departamento de Investigación Aplicada a la Innovación</option>
+             
                             </optgroup>
-                            <option value="OTRO" style="font-weight: bold; color: var(--primary);">OTRO (Especifique Manualmente)</option>
+                            <option value="OTRO" style="font-weight: bold;
+                            color: var(--primary);">OTRO (Especifique Manualmente)</option>
                         </select>
 
-                        <div id="div-otro-depto" style="display: none; margin-top: 10px;">
-                            <label class="form-label" style="font-size: 12px; color: var(--primary);">Especifique el nombre del área:</label>
+                        <div id="div-otro-depto" style="display: none;
+                        margin-top: 10px;">
+                            <label class="form-label" style="font-size: 12px;
+                            color: var(--primary);">Especifique el nombre del área:</label>
                             <input type="text" id="input-otro-depto" class="form-input" placeholder="Escriba el nombre aquí...">
                         </div>
                     </div>
 
-                    <div class="form-full" style="border-top: 1px solid #e2e8f0; margin-top: 10px; padding-top: 10px;">
+                
+                    <div class="form-full" style="border-top: 1px solid #e2e8f0; margin-top: 10px;
+                    padding-top: 10px;">
                         <label class="form-label" style="color: var(--primary);">ASIGNACIÓN DE PUNTOS (Actividades Dinámicas)</label>
                     </div>
 
                     <div id="dynamic-form-fields" class="form-full">
                         </div>
 
+  
                     <div class="total-preview">
                         Total Calculado: <span id="preview-total">0</span> PI
                     </div>
 
                     <div class="btn-group">
+            
                         <button type="button" class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
                         <button type="submit" class="btn-save" id="btn-save-text">Guardar Registro</button>
                     </div>
                 </div>
             </form>
         </div>
+ 
     </div>
 
     <div class="modal-overlay" id="modal-config">
         <div class="modal-content" style="max-width: 700px;">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h2 style="margin-top: 0; color: var(--secondary);">⚙️ Configuración de Normativa</h2>
-                <button type="button" class="btn-main" onclick="agregarActividadConfig()" style="font-size: 12px; padding: 8px 15px;">+ Agregar Actividad</button>
+            <div style="display:flex;
+            justify-content:space-between; align-items:center;">
+                <h2 style="margin-top: 0;
+                color: var(--secondary);">⚙️ Configuración de Normativa</h2>
+                <button type="button" class="btn-main" onclick="agregarActividadConfig()" style="font-size: 12px;
+                padding: 8px 15px;">+ Agregar Actividad</button>
             </div>
-            <p style="font-size: 13px; color: #64748b; margin-bottom: 20px;">
+            <p style="font-size: 13px;
+            color: #64748b; margin-bottom: 20px;">
                 Gestione las actividades. Use la barra lateral para ver más si hay muchas.
             </p>
             
             <form onsubmit="guardarConfig(event)">
+                
                 
                 <div class="config-scroll-area" id="config-items-container">
                     </div>
@@ -410,6 +471,7 @@
                 <div class="btn-group">
                     <button type="button" class="btn-cancel" onclick="cerrarConfig()">Cancelar</button>
                     <button type="submit" class="btn-save">Guardar Cambios</button>
+               
                 </div>
             </form>
         </div>
@@ -424,14 +486,15 @@
             { id: 'act_4', nombre: "Por Idea Propia", tipo: 'number', valor: 400 },
             { id: 'act_5', nombre: "Por Evento Anual", tipo: 'check', valor: 500 }
         ];
-
+        
         // --- DATOS INICIALES ---
+        // Se agrega la propiedad activo: true por defecto
         let datos = [
-            { id: "1045", name: "Jorge Tonos", depto: "Dirección de TI y Comunicaciones", valores: { 'act_1': true, 'act_2': 3, 'act_3': 2, 'act_4': 2, 'act_5': true }, points: 0 },
-            { id: "2033", name: "Iris Cesa", depto: "Dirección de Gestión Humana", valores: { 'act_1': true, 'act_2': 2, 'act_3': 1, 'act_4': 1, 'act_5': false }, points: 0 },
-            { id: "3012", name: "Rosanny Contreras", depto: "Departamento de Operaciones TIC", valores: { 'act_1': true, 'act_2': 3, 'act_3': 4, 'act_4': 0, 'act_5': true }, points: 0 }
+            { id: "1045", name: "Jorge Tonos", depto: "Dirección de TI y Comunicaciones", valores: { 'act_1': true, 'act_2': 3, 'act_3': 2, 'act_4': 2, 'act_5': true }, points: 0, activo: true },
+            { id: "2033", name: "Iris Cesa", depto: "Dirección de Gestión Humana", valores: { 'act_1': true, 'act_2': 2, 'act_3': 1, 'act_4': 1, 'act_5': false }, points: 0, activo: true },
+            { id: "3012", name: "Rosanny Contreras", depto: "Departamento de Operaciones TIC", valores: { 'act_1': true, 'act_2': 3, 'act_3': 4, 'act_4': 0, 'act_5': true }, points: 0, activo: true }
         ];
-
+        
         let indiceEdicion = -1;
 
         // --- CÁLCULO DINÁMICO ---
@@ -451,13 +514,17 @@
         // --- RENDERIZADO GLOBAL ---
         function renderizar() {
             // Filtrado
-            const termino = document.getElementById('input-search') ? document.getElementById('input-search').value.toLowerCase() : "";
+            const termino = document.getElementById('input-search') ?
+            document.getElementById('input-search').value.toLowerCase() : "";
             
             // Recalcular puntos
             datos.forEach(d => {
                 if(!d.valores) d.valores = {};
+                if(d.activo === undefined) d.activo = true; // Asegurar propiedad
                 d.points = calcularPuntos(d.valores);
             });
+            
+            // Ordenamos todos para la tabla
             datos.sort((a, b) => b.points - a.points);
 
             const datosFiltrados = datos.filter(d => 
@@ -466,17 +533,22 @@
                 d.depto.toLowerCase().includes(termino)
             );
 
-            // KPIs
-            document.getElementById('kpi-total').textContent = datos.length;
-            const totalGlobal = datos.reduce((sum, item) => sum + item.points, 0);
-            document.getElementById('kpi-puntos').textContent = totalGlobal.toLocaleString();
-            document.getElementById('kpi-lider').textContent = datos.length > 0 ? datos[0].name : "---";
+            // --- LÓGICA SOLO ACTIVOS (Para Rankings y KPIs) ---
+            const datosActivos = datos.filter(d => d.activo !== false);
 
-            // Gráfica 1: Ranking Global
+            // KPIs (Usando solo activos)
+            document.getElementById('kpi-total').textContent = datosActivos.length;
+            const totalGlobal = datosActivos.reduce((sum, item) => sum + item.points, 0);
+            document.getElementById('kpi-puntos').textContent = totalGlobal.toLocaleString();
+            document.getElementById('kpi-lider').textContent = datosActivos.length > 0 ?
+            datosActivos[0].name : "---";
+
+            // Gráfica 1: Ranking Global (Solo Activos)
             const chartPoints = document.getElementById('chart-points');
             chartPoints.innerHTML = "";
-            const maxPoints = Math.max(...datos.map(d => d.points)) || 100;
-            datos.slice(0, 10).forEach(d => {
+            const maxPoints = Math.max(...datosActivos.map(d => d.points)) || 100;
+            
+            datosActivos.slice(0, 10).forEach(d => {
                 const percent = (d.points / maxPoints) * 100;
                 chartPoints.innerHTML += `
                     <div class="bar-container">
@@ -490,24 +562,22 @@
                 `;
             });
 
-            // Gráfica 2: Ideas (RESTAURADO)
-            // Lógica inteligente: Busca la actividad que tenga "Idea" en el nombre, si no encuentra, usa la 4ta por defecto
+            // Gráfica 2: Ideas (Solo Activos)
             const chartIdeas = document.getElementById('chart-ideas');
             chartIdeas.innerHTML = "";
             
             // Buscamos la actividad correcta
-            const ideaActivity = configNormativa.find(c => c.nombre.includes("Idea")) || configNormativa.find(c => c.tipo === 'number');
+            const ideaActivity = configNormativa.find(c => c.nombre.includes("Idea")) ||
+            configNormativa.find(c => c.tipo === 'number');
 
             if (ideaActivity) {
-                // Actualizamos el título del gráfico dinámicamente
                 document.getElementById('chart-header-ideas').textContent = `💡 ${ideaActivity.nombre}`;
+                
+                // Calcular máximo usando solo activos
+                const maxVal = Math.max(...datosActivos.map(d => parseInt(d.valores[ideaActivity.id]) || 0)) || 5;
 
-                // Calcular máximo para la barra 100%
-                const maxVal = Math.max(...datos.map(d => parseInt(d.valores[ideaActivity.id]) || 0)) || 5;
-
-                datos.slice(0, 10).forEach(d => {
+                datosActivos.slice(0, 10).forEach(d => {
                     const val = parseInt(d.valores[ideaActivity.id]) || 0;
-                    // Solo mostramos si hay datos, o mostramos 0
                     const percent = (val / maxVal) * 100;
                     
                     if(val >= 0) {
@@ -516,7 +586,7 @@
                                 <div class="bar-name">${d.name}</div>
                                 <div class="bar-bg">
                                     <div class="bar-fill" style="width: ${percent}%; background-color: var(--accent);">
-                                        ${val}
+                                         ${val}
                                     </div>
                                 </div>
                             </div>
@@ -536,7 +606,6 @@
                 let shortName = item.nombre.length > 10 ? item.nombre.substring(0, 8) + '.' : item.nombre;
                 headersHTML += `<th title="${item.nombre}" style="text-align: center;">${shortName}</th>`;
             });
-
             headersHTML += `<th>Total PI</th><th style="text-align: center;">Acciones</th>`;
             theadRow.innerHTML = headersHTML;
 
@@ -549,11 +618,17 @@
             } else {
                 datosFiltrados.forEach((d) => {
                     const indexOriginal = datos.findIndex(item => item.id === d.id);
+                    const isInactivo = d.activo === false;
+                    const rowClass = isInactivo ? 'class="tr-inactive"' : '';
+                    
+                    // Configuración del botón Toggle
+                    const iconToggle = isInactivo ? '▶️' : '⏸️';
+                    const titleToggle = isInactivo ? 'Reactivar' : 'Inactivar';
                     
                     let rowHTML = `
-                        <tr>
+                        <tr ${rowClass}>
                             <td><span class="id-cell">${d.id}</span></td>
-                            <td style="font-weight: 600;">${d.name}</td>
+                            <td style="font-weight: 600;">${d.name} ${isInactivo ? '(Inactivo)' : ''}</td>
                             <td><span class="badge" title="${d.depto}">${d.depto}</span></td>
                     `;
 
@@ -567,12 +642,13 @@
                         }
                         rowHTML += `<td style="text-align: center;">${displayVal}</td>`;
                     });
-
+                    
                     rowHTML += `
                             <td style="color: var(--primary); font-weight: 800;">${d.points}</td>
                             <td style="text-align: center;">
                                 <div class="btn-group-action">
                                     <button class="btn-icon btn-edit" onclick="cargarEdicion(${indexOriginal})" title="Modificar">✏️</button>
+                                    <button class="btn-icon btn-toggle" onclick="toggleEstado(${indexOriginal})" title="${titleToggle}">${iconToggle}</button>
                                     <button class="btn-icon btn-delete" onclick="eliminarGestor(${indexOriginal})" title="Eliminar">🗑️</button>
                                 </div>
                             </td>
@@ -601,20 +677,24 @@
                 container.innerHTML += `
                     <div class="config-row" id="conf-row-${index}">
                         <div class="config-col-name">
-                            <label class="form-label" style="font-size:11px">Nombre Actividad</label>
+                            <label 
+                            class="form-label" style="font-size:11px">Nombre Actividad</label>
                             <input type="text" class="form-input" value="${item.nombre}" onchange="actualizarConfigTemp(${index}, 'nombre', this.value)">
                         </div>
                         <div class="config-col-type">
+               
                             <label class="form-label" style="font-size:11px">Tipo</label>
                             <select class="form-input" onchange="actualizarConfigTemp(${index}, 'tipo', this.value)">
                                 <option value="check" ${item.tipo === 'check' ? 'selected' : ''}>Si/No</option>
                                 <option value="number" ${item.tipo === 'number' ? 'selected' : ''}>Cantidad</option>
                             </select>
                         </div>
+                     
                         <div class="config-col-points">
                             <label class="form-label" style="font-size:11px">Puntos</label>
                             <input type="number" class="form-input" value="${item.valor}" onchange="actualizarConfigTemp(${index}, 'valor', this.value)">
                         </div>
+        
                         <button type="button" class="btn-delete-item" onclick="eliminarActividadConfig(${index})" title="Eliminar Actividad">
                             &times;
                         </button>
@@ -624,7 +704,7 @@
         }
 
         function agregarActividadConfig() {
-            const newId = 'act_' + Date.now(); 
+            const newId = 'act_' + Date.now();
             configNormativa.push({ id: newId, nombre: "Nueva Actividad", tipo: 'number', valor: 0 });
             renderConfigItems(); 
             const container = document.getElementById('config-items-container');
@@ -661,18 +741,22 @@
                 let html = `<div style="margin-bottom: 12px;">`;
                 
                 if (item.tipo === 'check') {
+                  
                     const checked = (val === true || val === 'true') ? 'checked' : '';
                     html += `
                         <label class="checkbox-wrapper">
                             <input type="checkbox" id="field_${item.id}" onchange="calcularTotalEnVivo()" ${checked}>
+      
                             <span>${item.nombre} <strong style="color:var(--primary)">(+${item.valor} PI)</strong></span>
                         </label>
                     `;
                 } else {
+             
                     const numVal = val || '';
                     html += `
                         <label class="form-label">${item.nombre}</label>
                         <input type="number" id="field_${item.id}" class="form-input" placeholder="0" min="0" value="${numVal}" oninput="calcularTotalEnVivo()">
+          
                         <span class="hint">* ${item.valor} PI por unidad</span>
                     `;
                 }
@@ -712,6 +796,12 @@
         }
 
         function cargarEdicion(index) {
+            // Verificar si está activo
+            if (datos[index].activo === false) {
+                alert("El gestor está INACTIVO. Debe reactivarlo para poder editar sus datos.");
+                return;
+            }
+
             indiceEdicion = index;
             const gestor = datos[index];
 
@@ -733,7 +823,6 @@
             verificarOtroDepto(); 
 
             renderFormFields(gestor.valores || {});
-
             document.getElementById('modal-title').textContent = "Modificar Datos";
             document.getElementById('btn-save-text').textContent = "Guardar Cambios";
             document.getElementById('input-id').disabled = true; 
@@ -766,12 +855,19 @@
                 }
             });
 
+            // Preservamos el estado activo si se edita, o true si es nuevo
+            let estadoActual = true;
+            if (indiceEdicion !== -1) {
+                estadoActual = datos[indiceEdicion].activo;
+            }
+
             const gestorFormulario = {
                 id: idInput,
                 name: document.getElementById('input-nombre').value,
                 depto: departamentoFinal, 
                 valores: nuevosValores, 
-                points: 0 
+                points: 0,
+                activo: estadoActual // Mantenemos estado
             };
 
             if (indiceEdicion === -1) {
@@ -808,6 +904,19 @@
                 datos.splice(index, 1);
                 renderizar();
             }
+        }
+
+        // --- NUEVA FUNCIÓN: INACTIVAR/ACTIVAR ---
+        function toggleEstado(index) {
+            // Cambiar estado booleano
+            datos[index].activo = !datos[index].activo;
+            
+            // Mensaje opcional para confirmar acción (puedes quitarlo si prefieres que sea directo)
+            /* if(datos[index].activo) alert("Gestor reactivado exitosamente.");
+            else alert("Gestor inactivado. No aparecerá en los rankings.");
+            */
+            
+            renderizar();
         }
 
         function cerrarModal() { 
