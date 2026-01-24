@@ -332,7 +332,21 @@
             // KPIs
             document.getElementById('kpi-total').textContent = activos.length;
             document.getElementById('kpi-puntos').textContent = activos.reduce((s, d) => s + d.points, 0).toLocaleString();
-            document.getElementById('kpi-lider').textContent = activos.length > 0 ? activos.sort((a,b)=>b.points-a.points)[0].name : "---";
+            
+            // --- CORRECCIÓN TOP INNOVADOR (EMPATES) ---
+            if(activos.length > 0) {
+                // Calcular máximo puntaje
+                const maxPts = Math.max(...activos.map(d => d.points));
+                // Filtrar TODOS los que tienen el máximo
+                const lideres = activos.filter(d => d.points === maxPts).map(d => d.name);
+                // Mostrar nombres separados por barra "/"
+                document.getElementById('kpi-lider').textContent = lideres.join(" / ");
+                
+                // Ajuste automático de tamaño si hay empate (para que no se desborde)
+                document.getElementById('kpi-lider').style.fontSize = lideres.length > 1 ? "22px" : "24px";
+            } else {
+                document.getElementById('kpi-lider').textContent = "---";
+            }
 
             // Gráficas
             renderCharts(activos);
