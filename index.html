@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -28,8 +27,8 @@
 
         /* ESTILOS DEL PROGRAMA */
         :root { --primary: #2563eb; --secondary: #1e293b; --accent: #10b981; --bg: #f1f5f9; --card: #ffffff; --danger: #ef4444; --edit: #f59e0b; --inactive: #64748b; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); color: var(--secondary); margin: 0; padding: 20px; display: flex; flex-direction: column; min-height: 100vh; }
-        .container { max-width: 1280px; margin: 0 auto; width: 100%; flex: 1; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); color: var(--secondary); margin: 0; padding: 20px; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; } /* Overflow hidden para evitar scroll por las monedas */
+        .container { max-width: 1280px; margin: 0 auto; width: 100%; flex: 1; position: relative; z-index: 10; }
         .header { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 20px 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 30px; border-left: 5px solid var(--primary); }
         .header h1 { margin: 0; font-size: 22px; color: var(--secondary); text-transform: uppercase; }
         .actions { display: flex; gap: 10px; }
@@ -70,28 +69,31 @@
         /* CLASE PARA OCULTAR ELEMENTOS A LOS GESTORES */
         .oculto-para-gestor { display: none !important; }
 
-        /* --- NUEVO ESTILO: BARRA DE MENSAJE (TICKER) --- */
-        .ticker-container {
-            position: fixed; bottom: 0; left: 0; width: 100%;
-            background: #111827; /* Fondo oscuro videojuego */
-            color: #fbbf24; /* Texto dorado llamativo */
-            padding: 12px 0; overflow: hidden; z-index: 9998;
-            border-top: 4px solid #f59e0b;
-            display: none; /* Oculto por defecto */
-            font-family: 'Courier New', monospace; /* Fuente estilo retro/consola */
-        }
-        .ticker-text {
-            white-space: nowrap; display: inline-block;
-            padding-left: 100%; animation: ticker 20s linear infinite;
-            font-weight: 900; font-size: 18px; text-transform: uppercase;
-            text-shadow: 0 0 5px #f59e0b; /* Efecto brillo neón */
-        }
-        @keyframes ticker {
-            0% { transform: translate3d(0, 0, 0); }
-            100% { transform: translate3d(-100%, 0, 0); }
+        /* --- BARRA DE MENSAJE (TICKER) --- */
+        .ticker-container { position: fixed; bottom: 0; left: 0; width: 100%; background: #111827; color: #fbbf24; padding: 12px 0; overflow: hidden; z-index: 9998; border-top: 4px solid #f59e0b; display: none; font-family: 'Courier New', monospace; }
+        .ticker-text { white-space: nowrap; display: inline-block; padding-left: 100%; animation: ticker 20s linear infinite; font-weight: 900; font-size: 18px; text-transform: uppercase; text-shadow: 0 0 5px #f59e0b; }
+        @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
+
+        /* --- EFECTO MONEDAS FLOTANTES --- */
+        .floating-coin {
+            position: fixed;
+            color: #fbbf24; /* Color Oro */
+            font-weight: 900;
+            font-family: sans-serif;
+            pointer-events: none; /* Para que no estorben al clickear */
+            z-index: 9990; /* Detrás del modal, frente al contenido */
+            animation: floatUp 2.5s ease-out forwards;
+            text-shadow: 0 0 4px #b45309;
+            opacity: 0;
         }
 
-        @media print { .actions, .btn-group-action, .search-container, #login-screen, .ticker-container { display: none !important; } }
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0.5); opacity: 0; }
+            10% { opacity: 1; transform: scale(1.2); }
+            100% { transform: translateY(-80px) scale(1); opacity: 0; }
+        }
+
+        @media print { .actions, .btn-group-action, .search-container, #login-screen, .ticker-container, .floating-coin { display: none !important; } }
     </style>
 </head>
 <body>
@@ -221,25 +223,53 @@
         let datos = [];
         let configNormativa = [];
         let indiceEdicion = -1;
-        let esModoLectura = false; // Nueva variable para controlar permisos
+        let esModoLectura = false; 
+        let intervaloMonedas = null; // Para controlar el efecto
+
+        // --- FUNCION: EFECTO VISUAL MONEDAS ---
+        function lanzarEfectoMonedas() {
+            if(intervaloMonedas) clearInterval(intervaloMonedas);
+            
+            // Crear una moneda cada cierto tiempo
+            intervaloMonedas = setInterval(() => {
+                if(!esModoLectura) { clearInterval(intervaloMonedas); return; } // Parar si no es gestor
+                
+                const simbolo = Math.random() > 0.5 ? '$' : '💰';
+                const el = document.createElement('div');
+                el.classList.add('floating-coin');
+                el.textContent = simbolo;
+                
+                // Posición aleatoria
+                const posX = Math.random() * 95; // 0 a 95% ancho
+                const posY = Math.random() * 80 + 10; // 10 a 90% alto
+                
+                el.style.left = posX + 'vw';
+                el.style.top = posY + 'vh';
+                el.style.fontSize = (Math.random() * 20 + 20) + 'px'; // Tamaño variable
+                
+                document.body.appendChild(el);
+                
+                // Limpiar elemento del DOM al terminar animación
+                setTimeout(() => { el.remove(); }, 2500);
+            }, 1500); // Frecuencia de aparición
+        }
 
         // --- NUEVA FUNCIÓN: ENTRAR COMO GESTOR ---
         function entrarComoGestor() {
-            esModoLectura = true; // Activar modo lectura
+            esModoLectura = true; 
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('sistema-principal').style.display = 'block';
             document.getElementById('nombre-tecnico').textContent = "Vista de Gestor (Solo Lectura)";
-            document.getElementById('nombre-tecnico').style.color = "#10b981"; // Color verde para indicar modo gestor
+            document.getElementById('nombre-tecnico').style.color = "#10b981"; 
             
-            // Ocultar botones administrativos globales
+            // Ocultar botones administrativos
             document.getElementById('btn-config-global').style.display = 'none';
             document.getElementById('btn-nuevo-global').style.display = 'none';
-
-            // MOSTRAR BOTÓN PARA VOLVER A LOGIN (ADMIN)
             document.getElementById('btn-volver-admin').style.display = 'flex';
 
-            // MOSTRAR BARRA ANIMADA DE PREMIOS
+            // MOSTRAR VISUALES MOTIVADORES
             document.getElementById('ticker-bar').style.display = 'block';
+            lanzarEfectoMonedas(); // Iniciar lluvia de $
 
             cargarDatosDelServidor(); 
         }
@@ -260,19 +290,19 @@
             .then(r => r.json())
             .then(res => {
                 if(res.validado) {
-                    esModoLectura = false; // Es Admin
+                    esModoLectura = false; 
                     document.getElementById('login-screen').style.display = 'none';
                     document.getElementById('sistema-principal').style.display = 'block';
                     document.getElementById('nombre-tecnico').textContent = "Bienvenido " + res.nombre;
-                    document.getElementById('nombre-tecnico').style.color = "#3b82f6"; // Color azul original
+                    document.getElementById('nombre-tecnico').style.color = "#3b82f6"; 
 
-                    // Mostrar botones de Admin y ocultar el de volver
                     document.getElementById('btn-config-global').style.display = 'flex';
                     document.getElementById('btn-nuevo-global').style.display = 'flex';
                     document.getElementById('btn-volver-admin').style.display = 'none';
 
-                    // ASEGURAR QUE LA BARRA ESTÉ OCULTA EN MODO ADMIN
+                    // Asegurar que NO se muestren efectos de gestor
                     document.getElementById('ticker-bar').style.display = 'none';
+                    if(intervaloMonedas) clearInterval(intervaloMonedas);
 
                     cargarDatosDelServidor(); 
                 } else {
@@ -306,7 +336,7 @@
         // --- CONEXIÓN: GUARDAR GESTOR ---
         function guardarGestor(e) {
             e.preventDefault();
-            if(esModoLectura) return; // Seguridad extra
+            if(esModoLectura) return; 
 
             const idInput = document.getElementById('input-id').value;
             let depto = document.getElementById('input-depto').value;
@@ -344,7 +374,7 @@
 
         // --- CONEXIÓN: ELIMINAR ---
         function eliminarGestor(index) {
-            if(esModoLectura) return; // Seguridad
+            if(esModoLectura) return; 
             if(!confirm("¿Seguro que deseas eliminar este registro de la base de datos?")) return;
             const idEliminar = datos[index].id;
             
@@ -362,7 +392,7 @@
 
         // --- CONEXIÓN: INACTIVAR/ACTIVAR ---
         function toggleEstado(index) {
-            if(esModoLectura) return; // Seguridad
+            if(esModoLectura) return; 
             const idTarget = datos[index].id;
             mostrarLoader("Actualizando estado...");
             fetch(URL_GOOGLE, {
@@ -379,7 +409,7 @@
         // --- CONEXIÓN: GUARDAR CONFIG ---
         function guardarConfigRemoto(e) {
             e.preventDefault();
-            if(esModoLectura) return; // Seguridad
+            if(esModoLectura) return; 
             mostrarLoader("Actualizando configuración...");
             fetch(URL_GOOGLE, {
                 method: 'POST',
@@ -414,7 +444,7 @@
             document.getElementById('kpi-total').textContent = activos.length;
             document.getElementById('kpi-puntos').textContent = activos.reduce((s, d) => s + d.points, 0).toLocaleString();
             
-            // TOP INNOVADOR (CORREGIDO PARA EMPATES)
+            // TOP INNOVADOR
             if(activos.length > 0) {
                 const maxPts = Math.max(...activos.map(d => d.points));
                 const lideres = activos.filter(d => d.points === maxPts).map(d => d.name);
@@ -452,7 +482,6 @@
                     tr += `<td style="text-align:center">${c.tipo==='check' ? (val?'✅':'-') : (val||'-')}</td>`;
                 });
 
-                // LÓGICA DE OCULTAR BOTONES PARA GESTOR
                 const claseAcciones = esModoLectura ? 'oculto-para-gestor' : '';
 
                 tr += `<td style="font-weight:bold; color:var(--primary)">${d.points}</td>
