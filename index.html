@@ -108,6 +108,8 @@
                     <p>Módulo de Gestión de Puntos | <span id="nombre-tecnico" style="color:#3b82f6; font-weight:800; font-size: 1.1em;">Acceso Seguro</span></p>
                 </div>
                 <div class="actions">
+                    <button id="btn-volver-admin" class="btn-config" onclick="location.reload()" style="display:none; background-color:#475569; color:white;">⬅ Acceder como Admin</button>
+
                     <button id="btn-config-global" class="btn-config" onclick="abrirConfig()">⚙️</button>
                     <button class="btn-print" onclick="window.print()">🖨️ Imprimir</button>
                     <button id="btn-nuevo-global" class="btn-main" onclick="abrirModal()"><span>+</span> Nuevo Gestor</button>
@@ -208,6 +210,9 @@
             document.getElementById('btn-config-global').style.display = 'none';
             document.getElementById('btn-nuevo-global').style.display = 'none';
 
+            // MOSTRAR BOTÓN PARA VOLVER A LOGIN (ADMIN)
+            document.getElementById('btn-volver-admin').style.display = 'flex';
+
             cargarDatosDelServidor(); 
         }
 
@@ -233,9 +238,10 @@
                     document.getElementById('nombre-tecnico').textContent = "Bienvenido " + res.nombre;
                     document.getElementById('nombre-tecnico').style.color = "#3b82f6"; // Color azul original
 
-                    // Mostrar botones por si acaso estaban ocultos
+                    // Mostrar botones de Admin y ocultar el de volver
                     document.getElementById('btn-config-global').style.display = 'flex';
                     document.getElementById('btn-nuevo-global').style.display = 'flex';
+                    document.getElementById('btn-volver-admin').style.display = 'none';
 
                     cargarDatosDelServidor(); 
                 } else {
