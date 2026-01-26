@@ -11,11 +11,16 @@
         .login-box { background: white; padding: 40px; border-radius: 16px; width: 320px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
         .login-input { width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; font-size: 16px; text-align: center; }
         
-        /* BOTÓN CON ANIMACIÓN */
-        .login-btn { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; transition: transform 0.1s; }
-        .login-btn:active { transform: scale(0.96); } /* Efecto de hundirse al presionar */
+        /* BOTONES DE LOGIN */
+        .login-btn { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; transition: transform 0.1s; margin-bottom: 10px; }
+        .login-btn:active { transform: scale(0.96); } 
         .login-btn:disabled { background: #94a3b8; cursor: wait; transform: none; }
-        
+
+        /* BOTÓN DE GESTOR (INVITADO) - NUEVO ESTILO */
+        .guest-btn { width: 100%; padding: 12px; background: #10b981; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; transition: transform 0.1s; display: flex; align-items: center; justify-content: center; gap: 8px;}
+        .guest-btn:hover { background: #059669; }
+        .guest-btn:active { transform: scale(0.96); }
+
         /* LOADER (Cargando) */
         #loader-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:5000; justify-content:center; align-items:center; flex-direction:column; }
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #2563eb; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom:10px; }
@@ -62,6 +67,9 @@
         #input-search { border: 2px solid var(--primary); background-color: #eff6ff; color: #1e3a8a; padding: 10px; border-radius: 6px; width: 250px; outline: none; }
         #input-search:focus { box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2); }
 
+        /* CLASE PARA OCULTAR ELEMENTOS A LOS GESTORES */
+        .oculto-para-gestor { display: none !important; }
+
         @media print { .actions, .btn-group-action, .search-container, #login-screen { display: none !important; } }
     </style>
 </head>
@@ -76,9 +84,18 @@
         <div class="login-box">
             <h2 style="color:#2563eb; margin-top:0;">Acceso Técnico</h2>
             <p style="color:#64748b; font-size:14px; margin-bottom:20px;">Sistema de Gestión 2026</p>
+            
             <input type="text" id="user-input" class="login-input" placeholder="Usuario">
             <input type="password" id="pass-input" class="login-input" placeholder="Contraseña">
-            <button onclick="iniciarSesion()" id="btn-login" class="login-btn">INGRESAR</button>
+            
+            <button onclick="iniciarSesion()" id="btn-login" class="login-btn">INGRESAR COMO ADMIN</button>
+            
+            <div style="margin: 15px 0; color: #cbd5e1; font-size: 12px;">──────── O ────────</div>
+            
+            <button onclick="entrarComoGestor()" class="guest-btn">
+                👋 Soy Gestor (Ver Avances)
+            </button>
+            
             <p id="msg-error" style="color:#ef4444; font-size:12px; margin-top:15px; min-height:15px;"></p>
         </div>
     </div>
@@ -91,9 +108,9 @@
                     <p>Módulo de Gestión de Puntos | <span id="nombre-tecnico" style="color:#3b82f6; font-weight:800; font-size: 1.1em;">Acceso Seguro</span></p>
                 </div>
                 <div class="actions">
-                    <button class="btn-config" onclick="abrirConfig()">⚙️</button>
+                    <button id="btn-config-global" class="btn-config" onclick="abrirConfig()">⚙️</button>
                     <button class="btn-print" onclick="window.print()">🖨️ Imprimir</button>
-                    <button class="btn-main" onclick="abrirModal()"><span>+</span> Nuevo Gestor</button>
+                    <button id="btn-nuevo-global" class="btn-main" onclick="abrirModal()"><span>+</span> Nuevo Gestor</button>
                 </div>
             </div>
 
@@ -177,8 +194,24 @@
         let datos = [];
         let configNormativa = [];
         let indiceEdicion = -1;
+        let esModoLectura = false; // Nueva variable para controlar permisos
 
-        // --- CONEXIÓN: LOGIN ---
+        // --- NUEVA FUNCIÓN: ENTRAR COMO GESTOR ---
+        function entrarComoGestor() {
+            esModoLectura = true; // Activar modo lectura
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('sistema-principal').style.display = 'block';
+            document.getElementById('nombre-tecnico').textContent = "Vista de Gestor (Solo Lectura)";
+            document.getElementById('nombre-tecnico').style.color = "#10b981"; // Color verde para indicar modo gestor
+            
+            // Ocultar botones administrativos globales
+            document.getElementById('btn-config-global').style.display = 'none';
+            document.getElementById('btn-nuevo-global').style.display = 'none';
+
+            cargarDatosDelServidor(); 
+        }
+
+        // --- CONEXIÓN: LOGIN ADMIN ---
         function iniciarSesion() {
             const user = document.getElementById('user-input').value;
             const pass = document.getElementById('pass-input').value;
@@ -194,10 +227,16 @@
             .then(r => r.json())
             .then(res => {
                 if(res.validado) {
+                    esModoLectura = false; // Es Admin
                     document.getElementById('login-screen').style.display = 'none';
                     document.getElementById('sistema-principal').style.display = 'block';
-                    // Aquí se pone la bienvenida
                     document.getElementById('nombre-tecnico').textContent = "Bienvenido " + res.nombre;
+                    document.getElementById('nombre-tecnico').style.color = "#3b82f6"; // Color azul original
+
+                    // Mostrar botones por si acaso estaban ocultos
+                    document.getElementById('btn-config-global').style.display = 'flex';
+                    document.getElementById('btn-nuevo-global').style.display = 'flex';
+
                     cargarDatosDelServidor(); 
                 } else {
                     ocultarLoader();
@@ -230,6 +269,8 @@
         // --- CONEXIÓN: GUARDAR GESTOR ---
         function guardarGestor(e) {
             e.preventDefault();
+            if(esModoLectura) return; // Seguridad extra
+
             const idInput = document.getElementById('input-id').value;
             let depto = document.getElementById('input-depto').value;
             if (depto === 'OTRO') depto = document.getElementById('input-otro-depto').value.trim();
@@ -266,6 +307,7 @@
 
         // --- CONEXIÓN: ELIMINAR ---
         function eliminarGestor(index) {
+            if(esModoLectura) return; // Seguridad
             if(!confirm("¿Seguro que deseas eliminar este registro de la base de datos?")) return;
             const idEliminar = datos[index].id;
             
@@ -283,6 +325,7 @@
 
         // --- CONEXIÓN: INACTIVAR/ACTIVAR ---
         function toggleEstado(index) {
+            if(esModoLectura) return; // Seguridad
             const idTarget = datos[index].id;
             mostrarLoader("Actualizando estado...");
             fetch(URL_GOOGLE, {
@@ -299,6 +342,7 @@
         // --- CONEXIÓN: GUARDAR CONFIG ---
         function guardarConfigRemoto(e) {
             e.preventDefault();
+            if(esModoLectura) return; // Seguridad
             mostrarLoader("Actualizando configuración...");
             fetch(URL_GOOGLE, {
                 method: 'POST',
@@ -333,16 +377,11 @@
             document.getElementById('kpi-total').textContent = activos.length;
             document.getElementById('kpi-puntos').textContent = activos.reduce((s, d) => s + d.points, 0).toLocaleString();
             
-            // --- CORRECCIÓN TOP INNOVADOR (EMPATES) ---
+            // TOP INNOVADOR (CORREGIDO PARA EMPATES)
             if(activos.length > 0) {
-                // Calcular máximo puntaje
                 const maxPts = Math.max(...activos.map(d => d.points));
-                // Filtrar TODOS los que tienen el máximo
                 const lideres = activos.filter(d => d.points === maxPts).map(d => d.name);
-                // Mostrar nombres separados por barra "/"
                 document.getElementById('kpi-lider').textContent = lideres.join(" / ");
-                
-                // Ajuste automático de tamaño si hay empate (para que no se desborde)
                 document.getElementById('kpi-lider').style.fontSize = lideres.length > 1 ? "22px" : "24px";
             } else {
                 document.getElementById('kpi-lider').textContent = "---";
@@ -355,7 +394,7 @@
             const thead = document.getElementById('table-head-row');
             let ths = `<th>ID</th><th>Nombre</th><th>Depto</th>`;
             configNormativa.forEach(c => ths += `<th style="text-align:center">${c.nombre.substring(0,10)}</th>`);
-            ths += `<th>Total</th><th style="text-align:center">Acciones</th>`;
+            ths += `<th>Total</th><th style="text-align:center" class="${esModoLectura ? 'oculto-para-gestor' : ''}">Acciones</th>`;
             thead.innerHTML = ths;
 
             const tbody = document.getElementById('table-body');
@@ -376,8 +415,11 @@
                     tr += `<td style="text-align:center">${c.tipo==='check' ? (val?'✅':'-') : (val||'-')}</td>`;
                 });
 
+                // LÓGICA DE OCULTAR BOTONES PARA GESTOR
+                const claseAcciones = esModoLectura ? 'oculto-para-gestor' : '';
+
                 tr += `<td style="font-weight:bold; color:var(--primary)">${d.points}</td>
-                    <td style="text-align:center">
+                    <td style="text-align:center" class="${claseAcciones}">
                         <div class="btn-group-action">
                             <button class="btn-icon btn-edit" onclick="cargarEdicion(${idx})">✏️</button>
                             <button class="btn-icon btn-toggle" onclick="toggleEstado(${idx})">${d.activo?'⏸️':'▶️'}</button>
@@ -409,6 +451,7 @@
 
         // --- GESTIÓN FORMULARIO ---
         function abrirModal() {
+            if(esModoLectura) return;
             indiceEdicion = -1;
             document.getElementById('form-gestor').reset();
             document.getElementById('input-id').disabled = false;
@@ -418,6 +461,7 @@
         }
 
         function cargarEdicion(index) {
+            if(esModoLectura) return;
             if (!datos[index].activo) { alert("Gestor inactivo. Reactivar primero."); return; }
             indiceEdicion = index;
             const d = datos[index];
